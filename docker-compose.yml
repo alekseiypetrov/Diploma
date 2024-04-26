@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  postgres_db:
+    container_name: 'postgres_db'
+    image: postgres:13.0-alpine
+    ports:
+      - '5432:5432'
+    env_file: .db.env
+    networks:
+      - db_network
+  app:
+    container_name: app
+    restart: always
+    env_file: .env
+    build: .
+    networks:
+      - db_network
+      - web_network
+    volumes:
+      - ./:/usr/src/app
+    depends_on:
+      - postgres_db
+  nginx:
+    container_name: nginx
+    restart: always
+    image: nginx:latest
+    ports:
+      - "5085:5085"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on:
+      - app
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
