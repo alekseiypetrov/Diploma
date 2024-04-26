@@ -12,7 +12,9 @@ services:
     container_name: app
     restart: always
     env_file: .env
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     networks:
       - db_network
       - web_network

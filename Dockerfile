@@ -1,5 +1,7 @@
 FROM python:3.11
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY . .
+
+
