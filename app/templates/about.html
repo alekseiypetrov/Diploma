@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="RU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>О проекте</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>О нашем проекте</h1>
+    <a href="{{ url_for('home') }}">На главную</a>
+</header>
+<main>
+    <p>Курсовая работа по дисциплине "Базы данных"</p>
+    <p>Тема: разработка БД для прогнозирования заболеваемости</p>
+    <p>Описание: разработанное приложение осуществляет регулярный сбор данных о средней температуре за месяц и суммарной
+        заболеваемости COVID-19 за месяц с внешних сайтов</p>
+</main>
+<footer>
+    <p>Тип ПО: веб-приложение</p>
+    <p>Архитектура: микросервисная</p>
+    <p>СУБД: PostgreSQL</p>
+    <p>Используемое ПО: flask (python), Docker</p>
+    <p>2024 - Алексей Петров (А-13-21)</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сервис парсер</title>
+</head>
+<body>
+<header>
+    <h1>Сервис парсер</h1>
+    <p>Назначение: регулярный сбор данных из внешних источников и занесение их в базу данных.</p>
+</header>
+
+<main>
+    <section>
+        <h2>Статус последнего обновления</h2>
+        <p><strong>Статус:</strong> {{ status['message'] }}</p>
+        <p><strong>Последнее обновление:</strong> {{ status['last_update'] or "Нет данных" }}</p>
+    </section>
+</main>
+
+<footer>
+    <p>2024 - Алексей Петров (А-13-21)</p>
+</footer>
+</body>
+</html>
