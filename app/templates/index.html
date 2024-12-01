@@ -8,23 +8,15 @@
 </head>
 <body>
 <header>
-    <h1>Добро пожаловать на главную страницу!</h1>
+    <h1>Главная страница</h1>
     <p></p>
     <a href="{{ url_for('about') }}">О проекте</a>
 </header>
 
 <main>
-    <section>
-        <h2></h2>
-        <p>Наш сервис занимается регулярным сбором данных из внешних источников и занесением их в базу данных.</p>
-    </section>
-
-    <section>
-        <h2>Последние обновления</h2>
-        <ul>
-            <li>Данные обновлены: 30.11.2024</li>
-        </ul>
-    </section>
+    <form action="/show_plot" method="POST">
+        <button name="show_but" type="submit">Показать данные</button>
+    </form>
 </main>
 
 <footer>

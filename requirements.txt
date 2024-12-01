@@ -9,3 +9,4 @@ lxml
 pandas
 datetime
 numpy
+matplotlib
