@@ -1,31 +1,11 @@
+import datetime
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from datetime import date
-from dateutil.relativedelta import relativedelta
-import psycopg2
-from app.config import Config
 import logging
-
-DATABASE_URL = Config.SQLALCHEMY_DATABASE_URI
-
-
-# занесение данных в БД
-def insert_info(dte, id_cntry, temperature, new_cases):
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-    try:
-        query = """INSERT INTO information VALUES (%s, %s, %s, %s);"""
-        cursor.execute(query, (dte, id_cntry, temperature, new_cases,))
-        conn.commit()
-        message = True
-    except Exception:
-        message = None
-    finally:
-        cursor.close()
-        conn.close()
-    return message
 
 
 # сбор данных о заболеваемости
@@ -46,10 +26,6 @@ def parse_covid_data(response, dte, country):
     covid_dataset = covid_dataset.resample('ME').sum()
 
     cur_dte = pd.date_range(start=f"{dte.year}-{dte.month}-01", periods=1, freq='ME')[0].date()
-
-    # print(covid_dataset)
-    # print(dte)
-
     try:
         return int(covid_dataset.loc[np.datetime64(cur_dte), 'New_cases'])
     except KeyError:
@@ -76,43 +52,11 @@ def parse_temperature_data(response, dte):
 
 
 # сбор данных с сайтов
-def parse_data(country):
+def parse_data(country, id_cntry, dte):
     covid_url = "https://data.who.int/dashboards/covid19/data"
     temp_url = "http://www.pogodaiklimat.ru/history/27612.htm"
 
-    conn = psycopg2.connect(DATABASE_URL)
-    cursor = conn.cursor()
-
-    query = """SELECT id_cntry FROM country WHERE cntry_name = %s;"""
-    cursor.execute(query, (country,))
-    result = cursor.fetchone()
-    if not result:
-        query = """
-                    INSERT INTO country (id_cntry, cntry_name)
-                    VALUES ((SELECT COALESCE(MAX(id_cntry), 0) + 1 FROM country), %s)
-                    RETURNING id_cntry;
-                    """
-        cursor.execute(query, (country,))
-        id_cntry = cursor.fetchone()[0]
-        conn.commit()
-    else:
-        id_cntry = result[0]
-
-    query = """SELECT dte 
-    FROM information 
-    WHERE id_cntry = %s
-    ORDER BY dte DESC
-    LIMIT 1; 
-    """
-    cursor.execute(query, (id_cntry,))
-    result = cursor.fetchone()
-    if not result:
-        dte = date(2020, 1, 31)
-    else:
-        dte = result[0] + relativedelta(months=1)
-
-    cursor.close()
-    conn.close()
+    # dte, id_cntry = extract_info(country)
 
     # logging.info(f": {type(dte)}, {type(country)}")
 
@@ -124,19 +68,15 @@ def parse_data(country):
 
     # logging.info(f": {covid_data}, {temp_data}")
 
+    # if not (temp_data is None) and not (covid_data is None):
+    #     return insert_info(dte, id_cntry, temp_data, covid_data)
+    # return None
+
     if not (temp_data is None) and not (covid_data is None):
-        return insert_info(dte, id_cntry, temp_data, covid_data)
+        return dte, id_cntry, temp_data, covid_data
     return None
 
 
 if __name__ == '__main__':
-    # print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    # parse_temperature_data(requests.get("http://www.pogodaiklimat.ru/history/27612.htm"), date(2021, 5, 1))
-    # print(date(2020, 12, 1))
-    # parse_data("Russian Federation", date(2020, 12, 1))
-    # print(parse_covid_data(requests.get("https://data.who.int/dashboards/covid19/data"),
-    #                        date(2020, 1, 31),
-    #                        "Russian Federation")
-    #       )
-
+    parse_data('Россия', 1, datetime.date(2020, 1, 1))
     ...

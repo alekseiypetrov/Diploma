@@ -10,3 +10,4 @@ pandas
 datetime
 numpy
 matplotlib
+pillow
