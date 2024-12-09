@@ -70,6 +70,9 @@ def generate_img(id_cntry, cntry_name, mode):
     for label in axes[1].get_xticklabels():
         label.set_rotation(45)
         label.set_ha("right")
+    if mode == "annual":
+        axes[0].set_xticks(dataset["dte"])
+        axes[1].set_xticks(dataset["dte"])
 
     fig.tight_layout()
 

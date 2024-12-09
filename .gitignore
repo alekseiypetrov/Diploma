@@ -1,5 +1,4 @@
 postgres-data/
-
+venv/
 .idea/
-
 **/__pycache__/
