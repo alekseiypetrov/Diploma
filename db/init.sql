@@ -23,3 +23,5 @@ CREATE TABLE avg_year_info
     avg_year_cases integer CHECK (avg_year_cases >= 0),
     PRIMARY KEY (dte_year, id_cntry)
 );
+
+
