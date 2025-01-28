@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Парсер</title>
+</head>
+<body>
+    <div class="header">
+        <h1>Страница парсера</h1>
+        <p>Назначение: регулярный сбор данных из внешних источников и занесение их в базу данных.</p>
+    </div>
+
+    <div class="main">
+        <div class="section"><ul>
+            <li><h2>Статус последнего обновления</h2></li>
+            <li><p><strong>Статус:</strong> {{ status['message'] }}</p></li>
+            <li><p><strong>Последнее обновление:</strong> {{ status['last_update'] or "Нет данных" }}</p></li>
+        </ul></div>
+    </div>
+
+    <div class="footer">
+        <p>2025 - Алексей Петров (А-13-21)</p>
+    </div>
+</body>
+</html>

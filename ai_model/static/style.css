@@ -19,20 +19,6 @@ body {
     padding: 20px;
 }
 
-/* Список обновлений */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-ul li {
-    background-color: #fff;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
 /* Футер */
 .footer {
     text-align: center;
@@ -43,4 +29,3 @@ ul li {
     bottom: 0;
     width: 100%;
 }
-

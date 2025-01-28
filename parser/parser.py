@@ -59,7 +59,7 @@ scheduler_clean.add_job(scheduled_clean, 'interval', hours=2)
 @app.route('/')
 def interface():
     logging.info("Запрос к странице парсера")
-    return render_template('parser.html', status=status)
+    return render_template('parser_page.html', status=status)
 
 
 def initialize_services():

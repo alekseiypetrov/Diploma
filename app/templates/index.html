@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-<header>
+<div class="header">
     <h1>Главная страница</h1>
     <p></p>
     <a href="{{ url_for('about') }}">О проекте</a>
-</header>
+</div>
 
-<main>
+<div class="main">
     <form action="/show_plot" method="POST">
         <fieldset>
             <legend>Выберите режим визуализации:</legend>
@@ -88,10 +88,10 @@
             });
         });
     </script>
-</main>
+</div>
 
-<footer>
-    <p>2024 - Алексей Петров (А-13-21)</p>
-</footer>
+<div class="footer">
+    <p>2025 - Алексей Петров (А-13-21)</p>
+</div>
 </body>
 </html>
