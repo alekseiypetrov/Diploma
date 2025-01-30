@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="../static/style.css">
+    <script src="../js/dateRange.js" defer></script>
+    <script src="../js/visibilityRangeField.js" defer></script>
 </head>
 <body>
 <div class="header">
@@ -48,48 +50,6 @@
         </fieldset>
         <button name="show_but" type="submit">Показать данные</button>
     </form>
-    <!-- скрипт на JS: закомментированный вариант - внешнее подключение, текущий - встроенное -->
-<!--    <script src="dateRange.js"></script>-->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const radios = document.querySelectorAll('input[name="mode"]');
-            const rangeFields = document.querySelector('.range-fields');
-            const startDateInput = document.getElementById('start-date');
-            const endDateInput = document.getElementById('end-date');
-
-            // Установить диапазон дат
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const minYear = currentYear - 2;
-            const maxYear = currentYear;
-
-            const formatDate = (year, month) => `${year}-${month.toString().padStart(2, '0')}`;
-
-            const minDate = formatDate(minYear, 1);
-            const maxDate = formatDate(maxYear, 12);
-
-            startDateInput.setAttribute('min', minDate);
-            startDateInput.setAttribute('max', maxDate);
-            endDateInput.setAttribute('min', minDate);
-            endDateInput.setAttribute('max', maxDate);
-
-            // Скрыть rangeFields по умолчанию
-            if (!document.querySelector('input[name="mode"][value="range"]').checked) {
-                rangeFields.style.display = 'none';
-            }
-
-            // Обработчик для радиокнопок
-            radios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    if (document.querySelector('input[name="mode"][value="range"]').checked) {
-                        rangeFields.style.display = 'block';
-                    } else {
-                        rangeFields.style.display = 'none';
-                    }
-                });
-            });
-        });
-    </script>
 </div>
 
 <div class="footer">
