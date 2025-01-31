@@ -46,21 +46,24 @@ services:
     networks:
       - flask_network
 
+  # ИИ модель
+  ai_model_service:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./ai_model/Dockerfile
+    container_name: ai_model_service
+    ports:
+      - "5010:5010"
+    environment:
+      - PYTHONPATH=/app:/ai_model:/
+    depends_on:
+      - db
+    networks:
+      - flask_network
+
 volumes:
   postgres-data:
 
 networks:
   flask_network:
-
-
-#
-#  # ИИ-модель
-#  ai_service:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    container_name: ai_service
-#    ports:
-#      - "5003:5000"
-#    depends_on:
-#      - db

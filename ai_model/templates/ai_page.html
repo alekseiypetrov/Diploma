@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Модель ИИ</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+<div class="header">
+    <h1>Страница предиктивной модели</h1>
+    <p>Назначение: обучение на исходных данных и формирование прогноза заболеваемости в стране, выбранной
+        пользователем</p>
+</div>
+<div class="main">
+    <form action="/show_fit_and_errors" method="POST">
+        <label>
+            Выбрать страну:
+            <select id="country" name="country" required>
+                {% for cntry in countryList%}
+                <option value="{{c.cntry_name}}"></option>
+            </select>
+        </label>
+        <button name="show_but" type="submit">Показать результат обучения и ошибку</button>
+    </form>
+</div>
+<div class="footer">
+    <p>2025 - Алексей Петров (А-13-21)</p>
+</div>
+</body>
+</html>

@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная страница</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Home</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="../js/dateRange.js" defer></script>
+    <script src="../js/visibilityRangeField.js" defer></script>
 </head>
 <body>
-<header>
+<div class="header">
     <h1>Главная страница</h1>
     <p></p>
     <a href="{{ url_for('about') }}">О проекте</a>
-</header>
+</div>
 
-<main>
+<div class="main">
     <form action="/show_plot" method="POST">
         <fieldset>
             <legend>Выберите режим визуализации:</legend>
@@ -48,50 +50,10 @@
         </fieldset>
         <button name="show_but" type="submit">Показать данные</button>
     </form>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const radios = document.querySelectorAll('input[name="mode"]');
-            const rangeFields = document.querySelector('.range-fields');
-            const startDateInput = document.getElementById('start-date');
-            const endDateInput = document.getElementById('end-date');
+</div>
 
-            // Установить диапазон дат
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const minYear = currentYear - 2;
-            const maxYear = currentYear;
-
-            const formatDate = (year, month) => `${year}-${month.toString().padStart(2, '0')}`;
-
-            const minDate = formatDate(minYear, 1);
-            const maxDate = formatDate(maxYear, 12);
-
-            startDateInput.setAttribute('min', minDate);
-            startDateInput.setAttribute('max', maxDate);
-            endDateInput.setAttribute('min', minDate);
-            endDateInput.setAttribute('max', maxDate);
-
-            // Скрыть rangeFields по умолчанию
-            if (!document.querySelector('input[name="mode"][value="range"]').checked) {
-                rangeFields.style.display = 'none';
-            }
-
-            // Обработчик для радиокнопок
-            radios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    if (document.querySelector('input[name="mode"][value="range"]').checked) {
-                        rangeFields.style.display = 'block';
-                    } else {
-                        rangeFields.style.display = 'none';
-                    }
-                });
-            });
-        });
-    </script>
-</main>
-
-<footer>
-    <p>2024 - Алексей Петров (А-13-21)</p>
-</footer>
+<div class="footer">
+    <p>2025 - Алексей Петров (А-13-21)</p>
+</div>
 </body>
 </html>
