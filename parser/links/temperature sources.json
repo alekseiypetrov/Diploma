@@ -1,0 +1,87 @@
+[
+	{
+		"country": "Австралия",
+		"en_country": "Australia",
+		"temp_url": "http://www.pogodaiklimat.ru/history/94768.htm"
+	},
+	{
+		"country": "Алжир",
+		"en_country": "Algeria",
+		"temp_url": "http://www.pogodaiklimat.ru/history/60369.htm"
+	},
+	{
+		"country": "Белоруссия (РБ)",
+		"en_country": "Belarus",
+		"temp_url": "http://www.pogodaiklimat.ru/history/26850.htm"
+	},
+	{
+		"country": "Великобритания",
+		"en_country": "United Kingdom of Great Britain and Northern Ireland",
+		"temp_url": "http://www.pogodaiklimat.ru/history/03772.htm"
+	},
+	{
+		"country": "Германия (ФРГ)",
+		"en_country": "Germany",
+		"temp_url": "http://www.pogodaiklimat.ru/history/10384.htm"
+	},
+	{
+		"country": "Египет",
+		"en_country": "Egypt",
+		"temp_url": "http://www.pogodaiklimat.ru/history/62366.htm"
+	},
+	{
+		"country": "Индия",
+		"en_country": "India",
+		"temp_url": "http://www.pogodaiklimat.ru/history/42182.htm"
+	},
+	{
+		"country": "Индонезия",
+		"en_country": "Indonesia",
+		"temp_url": "http://www.pogodaiklimat.ru/history/96745.htm"
+	},
+	{
+		"country": "Иран (ИР)",
+		"en_country": "Iran (Islamic Republic of)",
+		"temp_url": "http://www.pogodaiklimat.ru/history/40754.htm"
+	},
+	{
+		"country": "Казахстан",
+		"en_country": "Kazakhstan",
+		"temp_url": "http://www.pogodaiklimat.ru/history/35188.htm"
+	},
+	{
+		"country": "Китай (КНР)",
+		"en_country": "China",
+		"temp_url": "http://www.pogodaiklimat.ru/history/54511.htm"
+	},
+	{
+		"country": "Объединенные Арабские Эмираты (ОАЭ)",
+		"en_country": "United Arab Emirates",
+		"temp_url": "http://www.pogodaiklimat.ru/history/41217.htm"
+	},
+	{
+		"country": "Россия (РФ)",
+		"en_country": "Russian Federation",
+		"temp_url": "http://www.pogodaiklimat.ru/history/27612.htm"
+	},
+	{
+		"country": "Саудовская Аравия",
+		"en_country": "Saudi Arabia",
+		"temp_url": "http://www.pogodaiklimat.ru/history/40437.htm"
+	},
+	{
+		"country": "Франция",
+		"en_country": "France",
+		"temp_url": "http://www.pogodaiklimat.ru/history/07156.htm"
+	},
+	{
+		"country": "Южно-Африканская Республика (ЮАР)",
+		"en_country": "South Africa",
+		"temp_url": "http://www.pogodaiklimat.ru/history/68816.htm"
+	},
+	{
+		"country": "Япония",
+		"en_country": "Japan",
+		"temp_url": "http://www.pogodaiklimat.ru/history/47662.htm"
+	}
+]
