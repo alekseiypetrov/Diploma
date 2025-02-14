@@ -1,11 +1,11 @@
-import datetime
-import re
 from flask import Flask, render_template, Response, request
 from db_pool import DatabasePool
 import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
 import io
+import datetime
+import re
 
 app = Flask(__name__)
 
@@ -108,7 +108,7 @@ def show_data():
         if not re.match(DATE_FORMAT_REGEX, end_date):
             return f"Ошибка: Конечная дата '{end_date}' не соответствует формату YYYY-MM."
         elif not start_date or not end_date:
-            return "Заполните все поля"
+            return f"Заполните все поля"
 
     conn = DatabasePool.get_connection()
     try:
@@ -122,6 +122,8 @@ def show_data():
     finally:
         DatabasePool.release_connection(conn)
 
+    if not images:
+        return f"База данных пока пуста"
     combined_image = combine_img(images)
     new_img = io.BytesIO()
     combined_image.save(new_img, format='PNG')

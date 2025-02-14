@@ -11,4 +11,3 @@ numpy
 matplotlib
 pillow
 datetime
-dateutil

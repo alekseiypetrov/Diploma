@@ -10,7 +10,7 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/60369.htm"
 	},
 	{
-		"country": "Белоруссия (РБ)",
+		"country": "Белоруссия",
 		"en_country": "Belarus",
 		"temp_url": "http://www.pogodaiklimat.ru/history/26850.htm"
 	},
@@ -20,7 +20,7 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/03772.htm"
 	},
 	{
-		"country": "Германия (ФРГ)",
+		"country": "Германия",
 		"en_country": "Germany",
 		"temp_url": "http://www.pogodaiklimat.ru/history/10384.htm"
 	},
@@ -40,7 +40,7 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/96745.htm"
 	},
 	{
-		"country": "Иран (ИР)",
+		"country": "Иран",
 		"en_country": "Iran (Islamic Republic of)",
 		"temp_url": "http://www.pogodaiklimat.ru/history/40754.htm"
 	},
@@ -55,12 +55,12 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/54511.htm"
 	},
 	{
-		"country": "Объединенные Арабские Эмираты (ОАЭ)",
+		"country": "Объединенные Арабские Эмираты",
 		"en_country": "United Arab Emirates",
 		"temp_url": "http://www.pogodaiklimat.ru/history/41217.htm"
 	},
 	{
-		"country": "Россия (РФ)",
+		"country": "Россия",
 		"en_country": "Russian Federation",
 		"temp_url": "http://www.pogodaiklimat.ru/history/27612.htm"
 	},
@@ -75,7 +75,7 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/07156.htm"
 	},
 	{
-		"country": "Южно-Африканская Республика (ЮАР)",
+		"country": "Южно-Африканская Республика",
 		"en_country": "South Africa",
 		"temp_url": "http://www.pogodaiklimat.ru/history/68816.htm"
 	},

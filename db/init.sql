@@ -1,7 +1,7 @@
 CREATE TABLE country
 (
     id_cntry integer PRIMARY KEY,
-    cntry_name varchar(30) CHECK (NOT cntry_name='')
+    cntry_name varchar(50) CHECK (NOT cntry_name='')
 );
 
 
@@ -23,5 +23,3 @@ CREATE TABLE avg_year_info
     avg_year_cases integer CHECK (avg_year_cases >= 0),
     PRIMARY KEY (dte_year, id_cntry)
 );
-
-

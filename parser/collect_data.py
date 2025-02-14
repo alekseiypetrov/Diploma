@@ -1,21 +1,24 @@
 import requests
+import os
 from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from datetime import date
 from insert_data import extract_info
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # импорт стран из json-файла
 def import_countries():
-    file_path = ".\\links\\temperature sources.json"
+    file_path = os.path.join(BASE_DIR, "links", "temperature sources.json")
     return pd.read_json(file_path)
 
 
 # сбор данных о заболеваемости
 def parse_covid_data(dte, countries):
     # импорт ковидной ссылки
-    with open(".\\links\\covid link.bin", mode='rb') as f:
+    file_path = os.path.join(BASE_DIR, "links", "covid link.bin")
+    with open(file_path, mode='rb') as f:
         covid_url = f.readline().decode()
 
     response = requests.get(covid_url)
@@ -90,7 +93,7 @@ def parse_data():
                           astype({"temperature": float}))
 
     # сбор ковида и объединение с главной таблицей
-    covid_data = parse_covid_data(dte, tuple(sorted(table_of_countries.country.values)))
+    covid_data = parse_covid_data(dte, tuple(sorted(table_of_countries.en_country.values)))
     if covid_data is None:
         return f"Возникла ошибка при сборе данных заболеваемости для даты {dte}"
     table_of_countries = table_of_countries.join(covid_data, on="en_country", how="left").astype({"new_cases": int})
@@ -98,7 +101,7 @@ def parse_data():
 
 
 if __name__ == '__main__':
-    # import datetime
+    import datetime
     #
     # c = pd.read_json(".\\links\\temperature sources.json")
     # c.insert(3, "dte", pd.Series(

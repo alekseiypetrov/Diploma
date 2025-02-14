@@ -8,10 +8,9 @@ import signal
 app = Flask(__name__)
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
-INTERVAL_MINUTES = 5
 
-scheduler_collect.add_job(scheduled_parse, 'interval', minutes=INTERVAL_MINUTES)
-scheduler_clean.add_job(scheduled_clean, 'interval', hours=3)
+scheduler_collect.add_job(scheduled_parse, 'interval', seconds=90)
+scheduler_clean.add_job(scheduled_clean, 'interval', minutes=90)
 
 
 @app.route('/')
@@ -48,7 +47,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, shutdown_services)
 
     try:
-        app.run(host='0.0.0.0', port=5005, debug=False)
+        app.run(host='0.0.0.0', port=5005, debug=True)
     except Exception as e:
         logging.error("Ошибка в работе приложения: %s", e)
     finally:
