@@ -9,17 +9,10 @@ status = {"message": "Сервис ожидает первого выполне�
 
 # планировщик сбора данных
 def scheduled_parse():
-    # global status
-
-    # реализовать сбор данных для всех стран
-    # country = "Россия"
-
-    # message = parse_data(country, *extract_info(country))
     try:
         message = insert_info(parse_data())
-        # message = insert_info(*parse_data(country, *extract_info(country)))
     except Exception as e:
-        message = f"Ошибка при сборе данных"
+        message = f"Обработано исключение при сборе данных"
     if type(message) is bool:
         status["message"] = "Сбор данных выполнен успешно"
     else:
@@ -32,13 +25,13 @@ def scheduled_parse():
 # планировщик чистки данных
 def scheduled_clean():
     dte_today = datetime.date.today()
+    # основной код
     if dte_today.month != 1:
         logging.info(
-            f"Очистка завершена. Статус: Обновление происходит только в 1-м месяце, а сейчас {dte_today.month}")
+            f"Очистка отменена. Статус: Обновление происходит только в 1-м месяце, а сейчас {dte_today.month}")
     else:
-
-        # реализовать чистку данных для всех стран
-        country = "Россия"
-
-        message = clean_data(country, dte_today.year)
+        message = clean_data(dte_today.year)
         logging.info("Очистка завершена. Статус: %s", message)
+    # только для тестов
+    # message = clean_data(dte_today.year)
+    # logging.info("Очистка завершена. Статус: %s", message)

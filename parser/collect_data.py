@@ -29,28 +29,8 @@ def parse_covid_data(dte, countries):
                      set_index("Date_reported"))
 
     covid_dataset = covid_dataset[covid_dataset['Country'].isin(countries)]
-    # covid_dataset = covid_dataset[covid_dataset['Country'] == countries]
     covid_dataset.index = pd.to_datetime(covid_dataset.index)
     covid_dataset['New_cases'] = covid_dataset['New_cases'].fillna(0)
-    # covid_dataset = covid_dataset.drop(columns=['Country'])
-
-    """print((covid_dataset[covid_dataset['Country'] == "Egypt"].resample('ME').sum()).loc[np.datetime64(cur_dte)])
-    sample = covid_dataset[covid_dataset['Country'] == "Egypt"].resample('ME').sum()
-    cur_dte = pd.date_range(start=f"{dte.year}-{dte.month}-01", periods=1, freq='ME')[0].date()
-    print(sample.loc[np.datetime64(cur_dte)])
-
-    # print(covid_dataset[covid_dataset['Country'] == "Egypt"].resample('ME').sum())
-
-    covid_dataset = covid_dataset.resample('ME').sum()
-
-    # print(covid_dataset)
-
-    # cur_dte = pd.date_range(start=f"{dte.year}-{dte.month}-01", periods=1, freq='ME')[0].date()
-    # try:
-    #     return int(covid_dataset.loc[np.datetime64(cur_dte), 'New_cases'])
-    # except KeyError:
-    #     return None
-    """
 
     cur_dte = pd.date_range(start=f"{dte.year}-{dte.month}-01", periods=1, freq='ME')[0].date()
     covid_data = []

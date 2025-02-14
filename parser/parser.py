@@ -5,57 +5,13 @@ from schedulers import scheduled_parse, scheduled_clean, status
 from app.db_pool import DatabasePool
 import signal
 
-# from collect_data import parse_data
-# from insert_data import *
-# import datetime
-# import pytz
-
 app = Flask(__name__)
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
 INTERVAL_MINUTES = 5
 
-# status = {"message": "Сервис ожидает первого выполнения", "last_update": None}
-
-# # планировщик сбора данных
-# def scheduled_parse():
-#     # global status
-#     country = "Россия"
-#     # message = parse_data(country, *extract_info(country))
-#     try:
-#         message = insert_info(*parse_data(country, *extract_info(country)))
-#     except Exception as e:
-#         status["message"] = f"Ошибка при сборе данных для {country}"
-#         message = None
-#     if not (message is None):
-#         status["message"] = "Сбор данных выполнен успешно"
-#         moscow_tz = pytz.timezone("Europe/Moscow")
-#         status["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
-#         logging.info("Парсинг завершен. Статус: %s", status["message"])
-#     # if message is None:
-#     #     status["message"] = f"Ошибка при сборе данных для {country}"
-#     # else:
-#     #     status["message"] = "Сбор данных выполнен успешно"
-#     # moscow_tz = pytz.timezone("Europe/Moscow")
-#     # status["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
-#     # logging.info("Парсинг завершен. Статус: %s", status["message"])
-#
-#
-# # планировщик чистки данных
-# def scheduled_clean():
-#     dte_today = datetime.date.today()
-#     if dte_today.month != 1:
-#         logging.info(
-#             f"Очистка завершена. Статус: Обновление происходит только в 1-м месяце, а сейчас {dte_today.month}")
-#     else:
-#         # реализовать чистку данных для всех стран
-#         country = "Россия"
-#         message = clean_data(country, dte_today.year)
-#         logging.info("Очистка завершена. Статус: %s", message)
-
-
 scheduler_collect.add_job(scheduled_parse, 'interval', minutes=INTERVAL_MINUTES)
-scheduler_clean.add_job(scheduled_clean, 'interval', hours=2)
+scheduler_clean.add_job(scheduled_clean, 'interval', hours=3)
 
 
 @app.route('/')
@@ -64,8 +20,8 @@ def interface():
     return render_template('parser_page.html', status=status)
 
 
+# Инициализация пула соединений и планировщиков
 def initialize_services():
-    """Инициализация пула соединений и планировщиков"""
     logging.info("Инициализация сервиса...")
     DatabasePool.init_pool()
     scheduler_collect.start()
@@ -73,8 +29,8 @@ def initialize_services():
     logging.info("Сервис инициализирован.")
 
 
+# Закрытие пула соединений и остановка планировщиков
 def shutdown_services(*args):
-    """Закрытие пула соединений и остановка планировщиков"""
     logging.info("Завершение работы сервиса...")
     scheduler_collect.shutdown()
     scheduler_clean.shutdown()
