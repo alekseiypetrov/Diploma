@@ -16,8 +16,9 @@
         <label>
             Выбрать страну:
             <select id="country" name="country" required>
-                {% for cntry in countryList%}
-                <option value="{{c.cntry_name}}"></option>
+                {% for cntry in countryList %}
+                    <option value="{{ cntry }}">{{ cntry }}</option>
+                {% endfor %}
             </select>
         </label>
         <button name="show_but" type="submit">Показать результат обучения и ошибку</button>

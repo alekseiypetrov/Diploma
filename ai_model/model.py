@@ -8,15 +8,15 @@ import io
 app = Flask(__name__)
 
 
-@app.route('/ai_page')
+@app.route('/')
 def interface():
     conn = DatabasePool.get_connection()
     countryList = []
     try:
         cursor = conn.cursor()
-        query = """SELECT * FROM country ORDER BY cntry_name;"""
+        query = """SELECT cntry_name FROM country ORDER BY cntry_name;"""
         cursor.execute(query)
-        countryList = cursor.fetchall()
+        countryList = [row[0] for row in cursor.fetchall()]
         cursor.close()
     finally:
         DatabasePool.release_connection(conn)
