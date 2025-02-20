@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, Blueprint, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 from schedulers import scheduled_parse, scheduled_clean, status
 from app.db_pool import DatabasePool
 import signal
 
+# parser_bp = Blueprint('parser', __name__, url_prefix='/parser')
 app = Flask(__name__)
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
@@ -13,10 +14,13 @@ scheduler_collect.add_job(scheduled_parse, 'interval', seconds=90)
 scheduler_clean.add_job(scheduled_clean, 'interval', minutes=90)
 
 
-@app.route('/parser')
+@app.route('/')
 def interface():
     logging.info("Запрос к странице парсера")
     return render_template('parser_page.html', status=status)
+
+
+# app.register_blueprint(parser_bp)
 
 
 # Инициализация пула соединений и планировщиков
@@ -47,7 +51,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, shutdown_services)
 
     try:
-        app.run(host='0.0.0.0', port=5001, debug=False)
+        app.run(host='0.0.0.0', port=5001)
     except Exception as e:
         logging.error("Ошибка в работе приложения: %s", e)
     finally:
