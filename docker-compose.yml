@@ -24,7 +24,7 @@ services:
       dockerfile: ./app/Dockerfile
     container_name: interface_service
     ports:
-      - "5001:5000"
+      - "5000:5000"
     depends_on:
       - db
     networks:
@@ -38,7 +38,7 @@ services:
       dockerfile: ./parser/Dockerfile
     container_name: parser_service
     ports:
-      - "5005:5005"
+      - "5001:5001"
     environment:
       - PYTHONPATH=/app:/parser:/
     depends_on:
@@ -54,13 +54,24 @@ services:
       dockerfile: ./ai_model/Dockerfile
     container_name: ai_model_service
     ports:
-      - "5010:5010"
+      - "5002:5002"
     environment:
       - PYTHONPATH=/app:/ai_model:/
     depends_on:
       - db
     networks:
       - flask_network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+    depends_on:
+      - interface_service
+      - parser_service
+      - ai_model_service
 
 volumes:
   postgres-data:

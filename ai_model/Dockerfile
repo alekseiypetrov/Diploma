@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app
 
-EXPOSE 5010
+EXPOSE 5002
 
 CMD python ./ai_model/model.py

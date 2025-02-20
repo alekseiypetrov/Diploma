@@ -8,7 +8,7 @@ import io
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/ai')
 def interface():
     conn = DatabasePool.get_connection()
     countryList = []
@@ -26,6 +26,6 @@ def interface():
 if __name__ == '__main__':
     DatabasePool.init_pool()
     try:
-        app.run(host='0.0.0.0', port=5010, debug=False)
+        app.run(host='0.0.0.0', port=5002, debug=False)
     except Exception as e:
         DatabasePool.close_pool()

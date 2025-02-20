@@ -13,7 +13,7 @@ scheduler_collect.add_job(scheduled_parse, 'interval', seconds=90)
 scheduler_clean.add_job(scheduled_clean, 'interval', minutes=90)
 
 
-@app.route('/')
+@app.route('/parser')
 def interface():
     logging.info("Запрос к странице парсера")
     return render_template('parser_page.html', status=status)
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, shutdown_services)
 
     try:
-        app.run(host='0.0.0.0', port=5005, debug=True)
+        app.run(host='0.0.0.0', port=5001, debug=False)
     except Exception as e:
         logging.error("Ошибка в работе приложения: %s", e)
     finally:

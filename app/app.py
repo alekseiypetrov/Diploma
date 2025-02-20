@@ -6,7 +6,9 @@ from PIL import Image
 import io
 import datetime
 import re
+import os
 
+BASE_DIR, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__)
 
 DATE_FORMAT_REGEX = r"^\d{4}-(0[1-9]|1[0-2])$"
