@@ -1,7 +1,7 @@
 CREATE TABLE country
 (
     id_cntry integer PRIMARY KEY,
-    cntry_name varchar(50) CHECK (NOT cntry_name='')
+    cntry_name varchar(50) CHECK (cntry_name <> '')
 );
 
 
@@ -22,4 +22,13 @@ CREATE TABLE avg_year_info
     avg_year_temp real CHECK (avg_year_temp >= -273),
     avg_year_cases integer CHECK (avg_year_cases >= 0),
     PRIMARY KEY (dte_year, id_cntry)
+);
+
+
+CREATE TABLE ai_models
+(
+    id_cntry integer REFERENCES country(id_cntry) ON DELETE CASCADE ON UPDATE CASCADE,
+    model_name varchar(20) CHECK (model_name <> ''),
+    model_file BYTEA,
+    PRIMARY KEY (id_cntry, model_name)
 );

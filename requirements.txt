@@ -9,5 +9,8 @@ lxml
 pandas
 numpy
 matplotlib
+pmdarima
+scikit-learn
+joblib
 pillow
 datetime
