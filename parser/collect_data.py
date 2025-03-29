@@ -8,6 +8,7 @@ from insert_data import extract_info
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 # импорт стран из json-файла
 def import_countries():
     file_path = os.path.join(BASE_DIR, "links", "temperature sources.json")
@@ -98,44 +99,3 @@ def parse_data():
         return f"Возникла ошибка при сборе данных заболеваемости для даты {dte}"
     table_of_countries = table_of_countries.join(covid_data, on="en_country", how="left").astype({"new_cases": int})
     return table_of_countries
-
-
-if __name__ == '__main__':
-    import datetime
-    #
-    # c = pd.read_json(".\\links\\temperature sources.json")
-    # c.insert(3, "dte", pd.Series(
-    #     np.full(shape=c.shape[0], fill_value=datetime.date(2020, 1, 1))))
-    # print(c)
-    # print(c.iloc[0, 3])
-    # print(c)
-    # print(c.dtypes)
-    # for line in c.values:
-    #     print(line)
-    # parse_covid_data(datetime.date(2021, 1, 1), c.en_country.values)
-    # print(c.head())
-    # print(c.country.values)
-
-    # sp = [("Россия (РФ)", 1), ("Германия (ФРГ)", 2)]
-    # sp_df = pd.DataFrame(sp, columns=["country", "id"]).set_index("country")
-    # print(sp_df.head())
-    # c = c.join(sp_df, on="country", how="left")
-    # for line in c.values:
-    #     print(line)
-    # print(c.iloc[0])
-    # print(c.head())
-    # print(c.join(sp_df, on="country", how="left").keys()) #.fillna(-1).astype({"id": int}))  # how="left"))
-
-    # print(c.join(sp_df))
-
-    # covid_url = ""
-    # with open(".\\links\\covid link.bin", mode='rb') as f:
-    #     covid_url = f.readline().decode()
-    # print(covid_url)
-    # c = import_countries()
-    # print(tuple(map(lambda x: x["country"], c)))
-    # for cntry in c:
-    #     print(cntry)
-    # print(import_countries())
-    # parse_data('Россия', 1, datetime.date(2020, 1, 1))
-    ...

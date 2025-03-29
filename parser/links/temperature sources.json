@@ -35,11 +35,6 @@
 		"temp_url": "http://www.pogodaiklimat.ru/history/42182.htm"
 	},
 	{
-		"country": "Индонезия",
-		"en_country": "Indonesia",
-		"temp_url": "http://www.pogodaiklimat.ru/history/96745.htm"
-	},
-	{
 		"country": "Иран",
 		"en_country": "Iran (Islamic Republic of)",
 		"temp_url": "http://www.pogodaiklimat.ru/history/40754.htm"
@@ -73,11 +68,6 @@
 		"country": "Франция",
 		"en_country": "France",
 		"temp_url": "http://www.pogodaiklimat.ru/history/07156.htm"
-	},
-	{
-		"country": "Южно-Африканская Республика",
-		"en_country": "South Africa",
-		"temp_url": "http://www.pogodaiklimat.ru/history/68816.htm"
 	},
 	{
 		"country": "Япония",

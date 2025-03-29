@@ -30,5 +30,6 @@ CREATE TABLE ai_models
     id_cntry integer REFERENCES country(id_cntry) ON DELETE CASCADE ON UPDATE CASCADE,
     model_name varchar(20) CHECK (model_name <> ''),
     model_file BYTEA,
+    dte date
     PRIMARY KEY (id_cntry, model_name)
 );
