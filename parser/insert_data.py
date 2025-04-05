@@ -9,17 +9,17 @@ def insert_info(data):
     if type(data) is str:
         return data
     database = DatabasePool.get_connection()
+    cursor = database.cursor()
     try:
-        cursor = database.cursor()
         query = """INSERT INTO information VALUES (%s, %s, %s, %s);"""
         for line in data.values:
             cursor.execute(query, line[3:])
         database.commit()
-        cursor.close()
         message = True
     except Exception:
         message = f"Возникла ошибка при занесении новых данных в БД для даты {data.iloc[0, 3]}"
     finally:
+        cursor.close()
         DatabasePool.release_connection(database)
     return message
 
@@ -27,11 +27,10 @@ def insert_info(data):
 # извлечение данных для сбора: получение id всех стран и последней даты
 def extract_info(countries):
     database = DatabasePool.get_connection()
+    cursor = database.cursor()
     id_countries = []
     dte = date(2020, 1, 31)
     try:
-        cursor = database.cursor()
-
         # получение id всех стран
         query = """SELECT cntry_name, id_cntry FROM country ORDER BY cntry_name"""
         cursor.execute(query, )
@@ -56,8 +55,8 @@ def extract_info(countries):
         result = cursor.fetchone()
         if result:
             dte = result[0] + relativedelta(months=1)
-        cursor.close()
     finally:
+        cursor.close()
         DatabasePool.release_connection(database)
     return pd.DataFrame(id_countries, columns=["country", "id"]).set_index("country"), dte
 
@@ -65,25 +64,25 @@ def extract_info(countries):
 # добавление новой страны
 def insert_country(country):
     database = DatabasePool.get_connection()
+    cursor = database.cursor()
     try:
-        cursor = database.cursor()
         query = """
                     INSERT INTO country (id_cntry, cntry_name)
                     VALUES ((SELECT COALESCE(MAX(id_cntry), 0) + 1 FROM country), %s);
                 """
         cursor.execute(query, (country,))
         database.commit()
-        cursor.close()
     finally:
+        cursor.close()
         DatabasePool.release_connection(database)
 
 
 # чистка данных: перевод "старых" данных в среднегодовые показатели
 def clean_data(year):
     database = DatabasePool.get_connection()
+    cursor = database.cursor()
     flag = False
     try:
-        cursor = database.cursor()
         query = """SELECT year, avg_info.id_cntry, avg_temp, avg_cases 
         FROM country c
         JOIN 
@@ -109,9 +108,8 @@ def clean_data(year):
             query = """DELETE FROM information WHERE (%s - DATE_PART('Year', dte) >= 2);"""
             cursor.execute(query, (year,))
             database.commit()
-
-        cursor.close()
     finally:
+        cursor.close()
         DatabasePool.release_connection(database)
     if flag:
         return "Данные очищены"

@@ -22,8 +22,8 @@ def home():
 # генерация изображения для заданной страны
 def generate_img(id_cntry, cntry_name, mode):
     conn = DatabasePool.get_connection()
+    cursor = conn.cursor()
     try:
-        cursor = conn.cursor()
         if mode == "annual":
             query = """SELECT 
             DATE_PART('Year', dte) AS dte_year,
@@ -54,8 +54,8 @@ def generate_img(id_cntry, cntry_name, mode):
             ORDER BY dte;"""
             cursor.execute(query, (id_cntry, start_date, end_date))
         dataset = pd.DataFrame(cursor.fetchall(), columns=["dte", "temperature", "new_cases"])
-        cursor.close()
     finally:
+        cursor.close()
         DatabasePool.release_connection(conn)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))

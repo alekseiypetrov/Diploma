@@ -1,97 +1,83 @@
 from train_models import learning
 from app.db_pool import DatabasePool
 import datetime
-from datetime import date
 import pytz
 import logging
-import pandas as pd
-import os
 
 log = {"status": "Сервис ожидает первого выполнения", "temp": None, "covid": None, "last_update": None}
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-def import_countries():
-    file_path = os.path.join(BASE_DIR, "parser", "links", "temperature sources.json")
-    return pd.read_json(file_path)
-
-
-# извлечение данных для сбора: получение id всех стран и последней даты
-def extract_info(countries):
-    database = DatabasePool.get_connection()
-    id_countries = []
-    dte = date(2020, 1, 31)
-    try:
-        cursor = database.cursor()
-
-        # получение id всех стран
-        query = """SELECT cntry_name, id_cntry FROM country ORDER BY cntry_name"""
-        cursor.execute(query, )
-        result = cursor.fetchall()
-
-        cursor.execute(query, )
-        id_countries = cursor.fetchall()
-
-        query = """SELECT dte 
-                   FROM information 
-                   WHERE id_cntry = %s
-                   ORDER BY dte DESC
-                   LIMIT 1; 
-                """
-        cursor.execute(query, (id_countries[-1][-1],))
-        result = cursor.fetchone()
-        if result:
-            dte = result[0]
-        cursor.close()
-    finally:
-        DatabasePool.release_connection(database)
-    return pd.DataFrame(id_countries, columns=["country", "id"]).set_index("country"), dte
 
 
 # планировщик обучения моделей
 def scheduled_learn():
-    # проверяем, как давно обновлялись данные
-    countries, last_date = extract_info(tuple(sorted(import_countries().country.values)))
-    countries = countries.reset_index()
-    current_date = datetime.datetime.today()
     moscow_tz = pytz.timezone("Europe/Moscow")
     log["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
     log["temp"] = None
     log["covid"] = None
-    if (current_date - last_date).days > 31:
-        log["status"] = "В БД отсутствуют новые данные"
-        return
-    # проверяем, как давно обучалась модель
-    if fresh_models(current_date):
+    # проверка на актуальность моделей
+    if is_fresh_models():
         log["status"] = "Модели обучены на последних данных"
         return
+    id_countries = get_id()
+    # проверяем, есть ли страны в БД (обучение не может начаться раньше сбора)
+    if not id_countries:
+        log["status"] = "В БД отсутствуют страны"
+        return
     # в противном случае, обучаем
-    result = learning(countries)
+    result = learning(id_countries)
     log["status"] = result["status"]
     log["temp"] = result["temp"]
     log["covid"] = result["covid"]
-    logging.info("Обучение завершено. Статус: %s", log["status"])
+    logging.info(f"Обучение завершено. Статус: %s", log["status"])
     return
 
 
-# проверяем дату последнего обучения
-def fresh_models(current_date):
+# извлечение данных для сбора: получение id всех стран и последней даты
+def get_id():
     database = DatabasePool.get_connection()
+    cursor = database.cursor()
+    id_countries = []
     try:
-        cursor = database.cursor()
+        # получение id всех стран
+        query = """SELECT id_cntry FROM country;"""
+        cursor.execute(query, )
+        id_countries = cursor.fetchall()
+    finally:
+        cursor.close()
+        DatabasePool.release_connection(database)
+    return id_countries
+
+
+# проверяем дату последнего обучения
+def is_fresh_models():
+    database = DatabasePool.get_connection()
+    cursor = database.cursor()
+    try:
+        # получение последней даты обновления данных
+        query = """SELECT dte FROM information 
+        ORDER BY dte DESC
+        LIMIT 1;
+        """
+        cursor.execute(query, )
+        result = cursor.fetchone()
+        if not result:
+            return True
+        dte_collect = result[0]
+
+        # получение последней даты обновления моделей
         query = """SELECT dte FROM ai_models
         ORDER BY dte DESC
         LIMIT 1;
         """
-        result = cursor.execute(query, )
+        cursor.execute(query, )
+        result = cursor.fetchone()
         if not result:
-            flag = False
-        else:
-            dte = result.fetchone()[0]
-            flag = (current_date - dte).days() < 15
-        cursor.close()
+            return False
+        dte_learn = result[0]
+        # появились новые данные - модели устарели, иначе - не обучаем
+        return (dte_collect - dte_learn).days < 0
+    # любая возникшая ошибка не позволяет проводить дальнейшее обучение, поэтому возвращаем True
     except Exception as e:
-        flag = True
+        return True
     finally:
+        cursor.close()
         DatabasePool.release_connection(database)
-    return flag
