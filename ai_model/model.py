@@ -11,7 +11,8 @@ import io
 # ai_bp = Blueprint('ai', __name__, url_prefix='/ai')
 app = Flask(__name__)
 scheduler_learn = BackgroundScheduler()
-scheduler_learn.add_job(scheduled_learn, 'interval', minutes=15)
+# scheduler_learn.add_job(scheduled_learn, 'interval', minutes=15)
+
 
 @app.route('/')
 def interface():

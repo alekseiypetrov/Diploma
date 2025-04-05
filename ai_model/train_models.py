@@ -2,12 +2,12 @@ import datetime
 from app.db_pool import DatabasePool
 import numpy as np
 import pandas as pd
-from pmdarima import auto_arima
+# from pmdarima import auto_arima
+from sktime.forecasting.arima import AutoARIMA
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 import io
 import joblib
-
 
 def learning(countries):
     return {
@@ -16,6 +16,7 @@ def learning(countries):
         "covid": fit_covid_models(countries)
     }
 
+
 # обучение ансамбля по ковиду
 def fit_covid_models(countries):
     def fit(X, y, id_cntry):
@@ -23,12 +24,16 @@ def fit_covid_models(countries):
         # Обучение регрессии
         reg_model = LinearRegression().fit(X=X, y=y)
         # Обучение SARIMAX
-        sarimax_model = auto_arima(
-            y=y, X=X,
-            stepwise=True,
-            suppress_warnings=True,
-            trace=False
-        )
+        sarimax_model = AutoARIMA(
+            error_action='ignore',
+            suppress_warnings=True
+        ).fit(y=y, X=X)
+        # sarimax_model = auto_arima(
+        #     y=y, X=X,
+        #     stepwise=True,
+        #     suppress_warnings=True,
+        #     trace=False
+        # )
         # Формирование обучающей выборки для стэкера
         x1 = reg_model.predict(X)
         x2 = sarimax_model.predict(n_periods=X.shape[0], X=X)
@@ -112,12 +117,16 @@ def fit_covid_models(countries):
 # обучение по температуре
 def fit_temp_models(countries):
     def fit(x, id_cntry):
-        model = auto_arima(
-            x.iloc[:],
-            seasonal=True,
-            suppress_warnings=True,
-            trace=False
-        )
+        model = AutoARIMA(
+            error_action='ignore',
+            suppress_warnings=True
+        ).fit(y=x.iloc[:])
+        # model = auto_arima(
+        #     x.iloc[:],
+        #     seasonal=True,
+        #     suppress_warnings=True,
+        #     trace=False
+        # )
         try:
             model_bytes = io.BytesIO()
             joblib.dump(model, model_bytes)

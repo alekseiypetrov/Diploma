@@ -9,7 +9,7 @@ lxml
 pandas
 numpy
 matplotlib
-pmdarima
+sktime
 scikit-learn
 joblib
 pillow
