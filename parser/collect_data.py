@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from datetime import date
-from insert_data import extract_info
+from insert_data import extract_info, insert_info
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -87,15 +87,21 @@ def parse_data():
     for element in table_of_countries.values:
         temperature = parse_temperature_data(element[2], dte)
         if temperature is None:
+            del table_of_countries
             return f"Возникла ошибка при сборе данных температуры для даты {dte}"
         temp_data.append((element[0], temperature))
     temperature_data = pd.DataFrame(temp_data, columns=["country", "temperature"]).set_index("country")
     table_of_countries = (table_of_countries.join(temperature_data, on="country", how="left").
                           astype({"temperature": float}))
+    del temperature_data
 
     # сбор ковида и объединение с главной таблицей
     covid_data = parse_covid_data(dte, tuple(sorted(table_of_countries.en_country.values)))
     if covid_data is None:
+        del table_of_countries
         return f"Возникла ошибка при сборе данных заболеваемости для даты {dte}"
     table_of_countries = table_of_countries.join(covid_data, on="en_country", how="left").astype({"new_cases": int})
-    return table_of_countries
+    del covid_data
+    message = insert_info(table_of_countries)
+    del table_of_countries
+    return message

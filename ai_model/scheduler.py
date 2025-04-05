@@ -7,30 +7,6 @@ import logging
 log = {"status": "Сервис ожидает первого выполнения", "temp": None, "covid": None, "last_update": None}
 
 
-# планировщик обучения моделей
-def scheduled_learn():
-    moscow_tz = pytz.timezone("Europe/Moscow")
-    log["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
-    log["temp"] = None
-    log["covid"] = None
-    # проверка на актуальность моделей
-    if is_fresh_models():
-        log["status"] = "Модели обучены на последних данных"
-        return
-    id_countries = get_id()
-    # проверяем, есть ли страны в БД (обучение не может начаться раньше сбора)
-    if not id_countries:
-        log["status"] = "В БД отсутствуют страны"
-        return
-    # в противном случае, обучаем
-    result = learning(id_countries)
-    log["status"] = result["status"]
-    log["temp"] = result["temp"]
-    log["covid"] = result["covid"]
-    logging.info(f"Обучение завершено. Статус: %s", log["status"])
-    return
-
-
 # извлечение данных для сбора: получение id всех стран и последней даты
 def get_id():
     database = DatabasePool.get_connection()
@@ -73,11 +49,40 @@ def is_fresh_models():
         if not result:
             return False
         dte_learn = result[0]
+
         # появились новые данные - модели устарели, иначе - не обучаем
         return (dte_collect - dte_learn).days < 0
+
     # любая возникшая ошибка не позволяет проводить дальнейшее обучение, поэтому возвращаем True
     except Exception as e:
         return True
     finally:
         cursor.close()
         DatabasePool.release_connection(database)
+
+
+# планировщик обучения моделей
+def scheduled_learn():
+    moscow_tz = pytz.timezone("Europe/Moscow")
+    log["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
+    log["temp"] = None
+    log["covid"] = None
+
+    # проверяем, есть ли страны в БД (обучение не может начаться раньше сбора)
+    id_countries = get_id()
+    if not id_countries:
+        log["status"] = "В БД отсутствуют страны"
+        return
+
+    # проверка на актуальность моделей
+    if is_fresh_models():
+        log["status"] = "Модели обучены на последних данных"
+        return
+
+    # в противном случае, обучаем
+    result = learning(id_countries)
+    log["status"] = result["status"]
+    log["temp"] = result["temp"]
+    log["covid"] = result["covid"]
+    logging.info(f"Обучение завершено. Статус: %s", log["status"])
+    return

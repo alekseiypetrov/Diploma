@@ -111,7 +111,4 @@ def clean_data(year):
     finally:
         cursor.close()
         DatabasePool.release_connection(database)
-    if flag:
-        return "Данные очищены"
-    else:
-        return "Нет данных для чистки"
+    return "Данные очищены" if flag else "Нет данных для чистки"

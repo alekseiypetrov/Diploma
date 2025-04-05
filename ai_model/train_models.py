@@ -2,19 +2,48 @@ import datetime
 from app.db_pool import DatabasePool
 import numpy as np
 import pandas as pd
-# from pmdarima import auto_arima
 from sktime.forecasting.arima import AutoARIMA
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 import io
 import joblib
 
-def learning(countries):
-    return {
+
+def learning(id_countries):
+    result = {
         "status": "Обучение моделей",
-        "temp": fit_temp_models(countries),
-        "covid": fit_covid_models(countries)
+        "temp": "",
+        "covid": ""
     }
+    # сбор данных из БД
+    datasets = get_samples(id_countries)
+    # обучение моделей
+    models = fit(datasets)
+    del datasets
+    # сохранение моделей
+    save(models)
+    return result
+
+
+def get_samples(id_countries):
+    return pd.DataFrame()
+
+# СХЕМА ВОЗВРАЩАЕМОГО ЗНАЧЕНИЯ ФУНКЦИИ fit()
+# {
+#     <key = id_cntry>:
+#         {
+#             "SARIMA": <bytes>,
+#             "SARIMAX": <bytes>,
+#             "LinRegr": <bytes>,
+#             "GBR": <bytes>
+#         }
+# }
+def fit(datasets):
+    return True
+
+
+def save(models):
+    pass
 
 
 # обучение ансамбля по ковиду
@@ -28,12 +57,6 @@ def fit_covid_models(countries):
             error_action='ignore',
             suppress_warnings=True
         ).fit(y=y, X=X)
-        # sarimax_model = auto_arima(
-        #     y=y, X=X,
-        #     stepwise=True,
-        #     suppress_warnings=True,
-        #     trace=False
-        # )
         # Формирование обучающей выборки для стэкера
         x1 = reg_model.predict(X)
         x2 = sarimax_model.predict(n_periods=X.shape[0], X=X)
@@ -121,12 +144,6 @@ def fit_temp_models(countries):
             error_action='ignore',
             suppress_warnings=True
         ).fit(y=x.iloc[:])
-        # model = auto_arima(
-        #     x.iloc[:],
-        #     seasonal=True,
-        #     suppress_warnings=True,
-        #     trace=False
-        # )
         try:
             model_bytes = io.BytesIO()
             joblib.dump(model, model_bytes)
