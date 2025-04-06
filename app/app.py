@@ -1,5 +1,4 @@
 from flask import Flask, render_template, Response, request
-from db_pool import DatabasePool
 import pandas as pd
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -7,6 +6,8 @@ import io
 import datetime
 import re
 import os
+
+from db_pool import DatabasePool
 
 BASE_DIR, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__)
@@ -113,15 +114,15 @@ def show_data():
             return f"Заполните все поля"
 
     conn = DatabasePool.get_connection()
+    cursor = conn.cursor()
     try:
-        cursor = conn.cursor()
         query = """SELECT * FROM country ORDER BY cntry_name;"""
         cursor.execute(query)
         images = [
             generate_img(*line, mode) for line in cursor.fetchall()
         ]
-        cursor.close()
     finally:
+        cursor.close()
         DatabasePool.release_connection(conn)
 
     if not images:

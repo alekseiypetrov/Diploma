@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 from datetime import date
+
 from insert_data import extract_info, insert_info
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

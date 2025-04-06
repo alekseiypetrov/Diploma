@@ -1,10 +1,11 @@
-from train_models import learning
-from app.db_pool import DatabasePool
 import datetime
 import pytz
 import logging
 
-log = {"status": "Сервис ожидает первого выполнения", "temp": None, "covid": None, "last_update": None}
+from train_models import learning
+from app.db_pool import DatabasePool
+
+log = {"status": "Сервис ожидает первого выполнения", "last_update": None}
 
 
 # извлечение данных для сбора: получение id всех стран и последней даты
@@ -64,9 +65,7 @@ def is_fresh_models():
 # планировщик обучения моделей
 def scheduled_learn():
     moscow_tz = pytz.timezone("Europe/Moscow")
-    log["last_update"] = datetime.datetime.now(moscow_tz).strftime("%Y-%m-%d %H:%M:%S")
-    log["temp"] = None
-    log["covid"] = None
+    log["last_update"] = datetime.datetime.now(tz=moscow_tz).strftime(format="%Y-%m-%d %H:%M:%S")
 
     # проверяем, есть ли страны в БД (обучение не может начаться раньше сбора)
     id_countries = get_id()
@@ -80,9 +79,7 @@ def scheduled_learn():
         return
 
     # в противном случае, обучаем
-    result = learning(id_countries)
-    log["status"] = result["status"]
-    log["temp"] = result["temp"]
-    log["covid"] = result["covid"]
+    status = learning(id_countries)
+    log["status"] = status
     logging.info(f"Обучение завершено. Статус: %s", log["status"])
     return

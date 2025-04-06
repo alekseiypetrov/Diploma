@@ -1,9 +1,9 @@
 from flask import Flask, Blueprint, render_template
-from app.db_pool import DatabasePool
 from apscheduler.schedulers.background import BackgroundScheduler
-from scheduler import scheduled_learn, log
 import logging
 
+from app.db_pool import DatabasePool
+from scheduler import scheduled_learn, log
 
 # ai_bp = Blueprint('ai', __name__, url_prefix='/ai')
 app = Flask(__name__)

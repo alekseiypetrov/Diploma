@@ -1,7 +1,8 @@
-from app.db_pool import DatabasePool
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import pandas as pd
+
+from app.db_pool import DatabasePool
 
 
 # занесение данных в БД
@@ -32,7 +33,7 @@ def extract_info(countries):
     dte = date(2020, 1, 31)
     try:
         # получение id всех стран
-        query = """SELECT cntry_name, id_cntry FROM country ORDER BY cntry_name"""
+        query = """SELECT cntry_name, id_cntry FROM country ORDER BY cntry_name;"""
         cursor.execute(query, )
         result = cursor.fetchall()
 
