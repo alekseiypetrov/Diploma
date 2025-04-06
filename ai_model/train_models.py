@@ -7,6 +7,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 import io
 import joblib
+import psycopg2
+import logging
 
 from app.db_pool import DatabasePool
 
@@ -25,54 +27,6 @@ def learning(id_countries):
     return status
 
 
-if __name__ == '__main__':
-    a = np.array([7, 6, 5, 4, 3, 2, 1, 0])
-    print(sorted(a))
-    # a = None
-    # if not a:
-    #     print("OK")
-    # else:
-    #     print("Not OK")
-    # df = (pd.read_csv("D:\\Университет\\4 курс\\Диплом\\Программная реализация\\Датасеты (объединенные)\\Россия.csv").
-    #       astype({"Date": 'datetime64[ns]', "Temperature": float, "New cases": int}))
-    # df["Date"] = df["Date"] + pd.offsets.MonthEnd(0)
-    # y = df[["Date", "Temperature"]].set_index("Date")
-    # X = None
-    # X = df[["Date", "New cases"]].set_index("Date")
-    # X["New cases"] = np.log1p(X["New cases"].values)
-    # print(X)
-    # print(pd.date_range(start=datetime.date.today(), periods=3, freq="ME"))
-
-    # print(pd.DataFrame({"Date": pd.date_range(start=datetime.date.today(), periods=3, freq="ME"),
-    #                     "New cases": [0, 0, 0]}).set_index("Date"))
-
-    # model = AutoARIMA(
-    #     error_action='ignore',
-    #     suppress_warnings=True
-    # ).fit(y=y, X=X)
-    # fh_dates = pd.date_range(start=y.index[0] + pd.offsets.MonthEnd(0), periods=14, freq="ME")
-    # fh = ForecastingHorizon(fh_dates, is_relative=False)
-    # X_pred = None
-    # X_pred = pd.DataFrame({"Date": fh_dates,
-    #                        "New cases": [0, 0, 0]}).set_index("Date")
-    # y_pred = model.predict(fh=fh, X=X_pred)
-    # print(y_pred)
-
-    # print(df.iloc[:, 0])
-
-    # a = [(1, 2, 3, 4), (2, 1, 4, 3), (1, 2, 4, 5), (1, 2, 5, 6), (2, 4, 6, 8)]
-    # dfd = pd.DataFrame(a, columns=["id", "dte", 't', 'c'])
-    # print(dfd[dfd["id"] == 2])
-    # print(type(dfd["id"].values))
-    # arr = np.unique(dfd["id"].values)
-    # print(arr)
-    # d = dict(
-    #     zip(arr, [{} for _ in range(arr.shape[0])])
-    # )
-    # d[2]["SARIMA"] = "Hello"
-    # print(d[2])
-
-
 def get_samples():
     database = DatabasePool.get_connection()
     cursor = database.cursor()
@@ -85,6 +39,7 @@ def get_samples():
                    astype({"Date": np.datetime64, "Id": int, "Temperature": float, "Cases": int}))
         dataset["Date"] = dataset["Date"] + pd.offsets.MonthEnd(0)
     except Exception as e:
+        logging.exception(e)
         return []
     finally:
         cursor.close()
@@ -110,7 +65,7 @@ def fit(datasets):
     for id_country in id_countries:
         temp_train = datasets[datasets["Id"] == id_country]["Temperature"]
         covid_train = datasets[datasets["Id"] == id_country]["New cases"]
-        learned_models[id_country]["SARIMA"] = fit_sarima(y=temp_train)
+        learned_models[id_country]["SARIMA"], _ = fit_sarima(y=temp_train)
         learned_models[id_country]["LinRegr"], y1 = fit_lin_regr(x=temp_train,
                                                                  y=covid_train)
         learned_models[id_country]["SARIMAX"], y2 = fit_sarima(y=temp_train,
@@ -122,7 +77,7 @@ def fit(datasets):
 
 
 def fit_sarima(y, x=None):
-    if not x:
+    if x is not None:
         x["New cases"] = np.log1p(x["New cases"].values)
     model = AutoARIMA(
         error_action='ignore',
@@ -131,21 +86,25 @@ def fit_sarima(y, x=None):
     model_bytes = io.BytesIO()
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)
-    if not x:
+    model_bytes = model_bytes.read()
+    y_pred = None
+    if x is not None:
         fh_dates = pd.date_range(start=y.index[0] + pd.offsets.MonthEnd(0), periods=x.shape[0], freq="ME")
         fh = ForecastingHorizon(fh_dates, is_relative=False)
         y_pred = model.predict(fh=fh, X=x)
-        return model_bytes, y_pred
-    return model_bytes
+    return model_bytes, y_pred
 
 
 def fit_lin_regr(x, y):
+    if isinstance(x, pd.Series):
+        x = x.values.reshape(-1, 1)
     y = np.log1p(y)
     model = LinearRegression().fit(X=x, y=y)
     y_pred = model.predict(x)
     model_bytes = io.BytesIO()
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)
+    model_bytes = model_bytes.read()
     return model_bytes, y_pred
 
 
@@ -161,6 +120,7 @@ def fit_gbr(meta_x, y):
     model_bytes = io.BytesIO()
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)
+    model_bytes = model_bytes.read()
     return model_bytes
 
 
@@ -170,14 +130,16 @@ def save(models, id_countries, dte):
     try:
         query = """INSERT INTO ai_models (id_cntry, model_name, model_file, dte)
                     VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (id_cntry, model_name) DO UPDATE SET model_file = EXCLUDED.model_file, dte = EXCLUDED.dte;
+                    ON CONFLICT (id_cntry, model_name) DO 
+                    UPDATE SET model_file = EXCLUDED.model_file, dte = EXCLUDED.dte;
                     """
         for id_country in sorted(id_countries):
-            cursor.execute(query, (id_country, "SARIMA", models[id_country]["SARIMA"], dte))
-            cursor.execute(query, (id_country, "LinRegr", models[id_country]["LinRegr"], dte))
-            cursor.execute(query, (id_country, "SARIMAX", models[id_country]["SARIMAX"], dte))
-            cursor.execute(query, (id_country, "GBR", models[id_country]["GBR"], dte))
+            cursor.execute(query, (id_country, "SARIMA", psycopg2.Binary(models[id_country]["SARIMA"]), dte))
+            cursor.execute(query, (id_country, "LinRegr", psycopg2.Binary(models[id_country]["LinRegr"]), dte))
+            cursor.execute(query, (id_country, "SARIMAX", psycopg2.Binary(models[id_country]["SARIMAX"]), dte))
+            cursor.execute(query, (id_country, "GBR", psycopg2.Binary(models[id_country]["GBR"]), dte))
     except Exception as e:
+        logging.exception(e)
         return "Не все модели были обучены и сохранены"
     finally:
         database.commit()

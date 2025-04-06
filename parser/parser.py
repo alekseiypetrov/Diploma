@@ -1,17 +1,18 @@
 from flask import Flask, Blueprint, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
+import signal
+
 from schedulers import scheduled_parse, scheduled_clean, status
 from app.db_pool import DatabasePool
-import signal
 
 # parser_bp = Blueprint('parser', __name__, url_prefix='/parser')
 app = Flask(__name__)
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
 
-scheduler_collect.add_job(scheduled_parse, 'interval', minutes=5)
-scheduler_clean.add_job(scheduled_clean, 'interval', minutes=90)
+scheduler_collect.add_job(scheduled_parse, 'interval', minutes=2)
+scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
 
 
 @app.route('/')

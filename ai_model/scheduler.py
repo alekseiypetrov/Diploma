@@ -12,12 +12,14 @@ log = {"status": "Сервис ожидает первого выполнени�
 def get_id():
     database = DatabasePool.get_connection()
     cursor = database.cursor()
-    id_countries = []
     try:
         # получение id всех стран
         query = """SELECT id_cntry FROM country;"""
         cursor.execute(query, )
         id_countries = cursor.fetchall()
+    except Exception as e:
+        logging.exception(e)
+        return []
     finally:
         cursor.close()
         DatabasePool.release_connection(database)
@@ -56,6 +58,7 @@ def is_fresh_models():
 
     # любая возникшая ошибка не позволяет проводить дальнейшее обучение, поэтому возвращаем True
     except Exception as e:
+        logging.exception(e)
         return True
     finally:
         cursor.close()
