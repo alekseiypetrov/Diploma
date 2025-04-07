@@ -8,7 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 import io
 import joblib
 
-from app.db_pool import DatabasePool
+from db_pool import DatabasePool
 
 
 def predict():
@@ -24,11 +24,28 @@ def temp_pred():
 
 
 if __name__ == '__main__':
+    # a = np.array([np.nan, np.nan, 1, 2, 3])
+    # a = np.array([5, 5, 1, 2, 3])
+    # a = np.array([np.nan, np.nan, np.nan, np.nan, np.nan])
+    # print(np.array([[]]).size)
+    # print(a[~np.isnan(a)], a[~np.isnan(a)].mean())
+    # a[np.isnan(a)] = a[~np.isnan(a)].mean()
+    # a = np.nan_to_num(a, other.mean())
+    # print(a)
+    # print(type(pd.DataFrame().values))
+    # a = {1: 1, 2: 2, 3: 3}
+    # keys = {3, 1}
+    # print(type(keys), type(set(a.keys())))
+    # a = {}
+    # print(set(a.keys()) == keys)
+    # print(1 in a.keys())
+    # print(a[4])
     a = 5
     # df = (pd.read_csv("D:\\Университет\\4 курс\\Диплом\\Программная реализация\\Датасеты (объединенные)\\Россия.csv").
     #       astype({"Date": 'datetime64[ns]', "Temperature": float, "New cases": int}))
     # df["Date"] = df["Date"] + pd.offsets.MonthEnd(0)
     # y = df[["Date", "Temperature"]].set_index("Date")
+    # print(type(y))
     # X = None
     # X = df[["Date", "New cases"]].set_index("Date")
     # X["New cases"] = np.log1p(X["New cases"].values)
@@ -41,14 +58,18 @@ if __name__ == '__main__':
     # model = AutoARIMA(
     #     error_action='ignore',
     #     suppress_warnings=True
-    # ).fit(y=y, X=X)
+    # ).fit(y=y)  # , X=X)
     # fh_dates = pd.date_range(start=y.index[0] + pd.offsets.MonthEnd(0), periods=14, freq="ME")
     # fh = ForecastingHorizon(fh_dates, is_relative=False)
     # X_pred = None
     # X_pred = pd.DataFrame({"Date": fh_dates,
     #                        "New cases": [0, 0, 0]}).set_index("Date")
-    # y_pred = model.predict(fh=fh, X=X_pred)
+    # y_pred = (model.predict(fh=fh).  # , X=X_pred).
+    #           fillna(0))
+    # print(type(y_pred))
+    # print(type(y_pred) == type(y))
     # print(y_pred)
+    # print(y_pred.values)
 
     # print(df.iloc[:, 0])
 

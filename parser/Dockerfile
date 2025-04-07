@@ -10,4 +10,4 @@ COPY . /app
 
 EXPOSE 5001
 
-CMD python ./parser/parser.py
+CMD ["python", "./parser/parser.py"]

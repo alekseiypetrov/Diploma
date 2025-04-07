@@ -10,4 +10,4 @@ COPY . /app
 
 EXPOSE 5002
 
-CMD python ./ai_model/model.py
+CMD ["python", "./ai_model/model.py"]

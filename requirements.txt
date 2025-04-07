@@ -7,8 +7,9 @@ requests
 bs4
 lxml
 pandas
-numpy
+numpy==1.26.3
 matplotlib
+pmdarima
 sktime
 scikit-learn
 joblib

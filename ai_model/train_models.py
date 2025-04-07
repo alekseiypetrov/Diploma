@@ -13,21 +13,21 @@ import logging
 from app.db_pool import DatabasePool
 
 
-def learning(id_countries):
+def learning():  # id_countries):  # -> Str
     # сбор данных из БД
     datasets = get_samples()
-    if not datasets:
+    if datasets.empty:
         return "Возникла ошибка при сборе данных из БД"
     # обучение моделей
     models = fit(datasets)
-    del datasets
     # сохранение моделей
-    status = save(models, id_countries, datetime.date.today())
+    status = save(models, np.unique(datasets["Id"].values), datetime.date.today())
+    del datasets
     del models
     return status
 
 
-def get_samples():
+def get_samples():  # -> Pandas.DataFrame()
     database = DatabasePool.get_connection()
     cursor = database.cursor()
     try:
@@ -36,11 +36,11 @@ def get_samples():
         """
         cursor.execute(query, )
         dataset = (pd.DataFrame(cursor.fetchall(), columns=["Date", "Id", "Temperature", "Cases"]).
-                   astype({"Date": np.datetime64, "Id": int, "Temperature": float, "Cases": int}))
+                   astype({"Date": 'datetime64[ns]', "Id": int, "Temperature": float, "Cases": int}))
         dataset["Date"] = dataset["Date"] + pd.offsets.MonthEnd(0)
     except Exception as e:
         logging.exception(e)
-        return []
+        return pd.DataFrame()
     finally:
         cursor.close()
         DatabasePool.release_connection(database)
@@ -57,29 +57,32 @@ def get_samples():
 #             "GBR": <bytes>
 #         }
 # }
-def fit(datasets):
+def fit(datasets):  # -> Dict( <Int>: Dict(<Str>: <io.Bytes()>) )
     id_countries = np.unique(datasets["Id"].values)
     learned_models = dict(
         zip(id_countries, [{} for _ in range(id_countries.shape[0])])
     )
     for id_country in id_countries:
-        temp_train = datasets[datasets["Id"] == id_country]["Temperature"]
-        covid_train = datasets[datasets["Id"] == id_country]["New cases"]
+        temp_train = datasets[datasets["Id"] == id_country][["Date", "Temperature"]].set_index("Date")
+        covid_train = datasets[datasets["Id"] == id_country][["Date", "Cases"]].set_index("Date")
         learned_models[id_country]["SARIMA"], _ = fit_sarima(y=temp_train)
-        learned_models[id_country]["LinRegr"], y1 = fit_lin_regr(x=temp_train,
-                                                                 y=covid_train)
-        learned_models[id_country]["SARIMAX"], y2 = fit_sarima(y=temp_train,
-                                                               x=covid_train)
+        learned_models[id_country]["LinRegr"], y1 = fit_lin_regr(x=temp_train["Temperature"].values,
+                                                                 y=covid_train["Cases"].values)
+        learned_models[id_country]["SARIMAX"], y2 = fit_sarima(y=covid_train,
+                                                               x=temp_train)
 
         learned_models[id_country]["GBR"] = fit_gbr(meta_x=[y1, y2],
-                                                    y=covid_train)
+                                                    y=covid_train["Cases"].values)
     return learned_models
 
 
-def fit_sarima(y, x=None):
+def fit_sarima(y, x=None):  # -> ( io.Bytes(), NumPy.ndarray )
+    seasonal = True
     if x is not None:
-        x["New cases"] = np.log1p(x["New cases"].values)
+        seasonal = False
+        y["Cases"] = np.log1p(y["Cases"].values)
     model = AutoARIMA(
+        seasonal=seasonal,
         error_action='ignore',
         suppress_warnings=True
     ).fit(y=y, X=x)
@@ -87,20 +90,29 @@ def fit_sarima(y, x=None):
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)
     model_bytes = model_bytes.read()
-    y_pred = None
+    y_pred = np.array([])
     if x is not None:
         fh_dates = pd.date_range(start=y.index[0] + pd.offsets.MonthEnd(0), periods=x.shape[0], freq="ME")
         fh = ForecastingHorizon(fh_dates, is_relative=False)
-        y_pred = model.predict(fh=fh, X=x)
+        y_pred = model.predict(fh=fh, X=x).values
+        # если есть NaN в прогнозах, заменить на среднее значение всех не NaN элементов
+        if y_pred[~np.isnan(y_pred)].size == 0:
+            y_pred[np.isnan(y_pred)] = 0
+        else:
+            y_pred[np.isnan(y_pred)] = y_pred[~np.isnan(y_pred)].mean()
     return model_bytes, y_pred
 
 
-def fit_lin_regr(x, y):
-    if isinstance(x, pd.Series):
-        x = x.values.reshape(-1, 1)
+def fit_lin_regr(x, y):  # -> ( io.Bytes(), NumPy.ndarray )
+    x = x.reshape(-1, 1)
     y = np.log1p(y)
     model = LinearRegression().fit(X=x, y=y)
     y_pred = model.predict(x)
+    # в случае возникновения NaN в прогнозах, заменить на среднее значение всех не NaN элементов
+    if y_pred[~np.isnan(y_pred)].size == 0:
+        y_pred[np.isnan(y_pred)] = 0
+    else:
+        y_pred[np.isnan(y_pred)] = y_pred[~np.isnan(y_pred)].mean()
     model_bytes = io.BytesIO()
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)
@@ -108,13 +120,12 @@ def fit_lin_regr(x, y):
     return model_bytes, y_pred
 
 
-def fit_gbr(meta_x, y):
-    x1, x2 = meta_x[0].values, meta_x[1].values
-    if x1.ndim != 2:
-        x1 = x1.reshape(-1, 1)
-    if x2.ndim != 2:
-        x2 = x2.reshape(-1, 1)
+def fit_gbr(meta_x, y):  # -> io.Bytes()
+    x1, x2 = meta_x[0], meta_x[1]
+    x1 = x1.reshape(-1, 1)
+    x2 = x2.reshape(-1, 1)
     meta_x = np.concatenate([x1, x2], axis=1)
+    y = np.log1p(y)
     model = GradientBoostingRegressor(n_estimators=250, learning_rate=0.2)
     model.fit(meta_x, y)
     model_bytes = io.BytesIO()
@@ -124,7 +135,7 @@ def fit_gbr(meta_x, y):
     return model_bytes
 
 
-def save(models, id_countries, dte):
+def save(models, id_countries, dte):  # -> Str
     database = DatabasePool.get_connection()
     cursor = database.cursor()
     try:
@@ -133,11 +144,11 @@ def save(models, id_countries, dte):
                     ON CONFLICT (id_cntry, model_name) DO 
                     UPDATE SET model_file = EXCLUDED.model_file, dte = EXCLUDED.dte;
                     """
-        for id_country in sorted(id_countries):
-            cursor.execute(query, (id_country, "SARIMA", psycopg2.Binary(models[id_country]["SARIMA"]), dte))
-            cursor.execute(query, (id_country, "LinRegr", psycopg2.Binary(models[id_country]["LinRegr"]), dte))
-            cursor.execute(query, (id_country, "SARIMAX", psycopg2.Binary(models[id_country]["SARIMAX"]), dte))
-            cursor.execute(query, (id_country, "GBR", psycopg2.Binary(models[id_country]["GBR"]), dte))
+        for id_country in id_countries:  # sorted(id_countries):
+            cursor.execute(query, (int(id_country), "SARIMA", psycopg2.Binary(models[id_country]["SARIMA"]), dte))
+            cursor.execute(query, (int(id_country), "LinRegr", psycopg2.Binary(models[id_country]["LinRegr"]), dte))
+            cursor.execute(query, (int(id_country), "SARIMAX", psycopg2.Binary(models[id_country]["SARIMAX"]), dte))
+            cursor.execute(query, (int(id_country), "GBR", psycopg2.Binary(models[id_country]["GBR"]), dte))
     except Exception as e:
         logging.exception(e)
         return "Не все модели были обучены и сохранены"

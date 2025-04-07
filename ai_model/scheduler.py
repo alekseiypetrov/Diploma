@@ -71,8 +71,8 @@ def scheduled_learn():
     log["last_update"] = datetime.datetime.now(tz=moscow_tz).strftime(format="%Y-%m-%d %H:%M:%S")
 
     # проверяем, есть ли страны в БД (обучение не может начаться раньше сбора)
-    id_countries = get_id()
-    if not id_countries:
+    # id_countries = get_id()
+    if not get_id():
         log["status"] = "В БД отсутствуют страны"
         return
 
@@ -82,7 +82,7 @@ def scheduled_learn():
         return
 
     # в противном случае, обучаем
-    status = learning(id_countries)
+    status = learning()
     log["status"] = status
     logging.info(f"Обучение завершено. Статус: %s", log["status"])
     return

@@ -25,9 +25,6 @@ def scheduled_parse():
 # планировщик чистки данных
 def scheduled_clean():
     dte_today = datetime.date.today()
-    if dte_today.month != 1:
-        logging.info(
-            f"Очистка отменена. Статус: Обновление происходит только в 1-м месяце года, а сейчас {dte_today.month}")
-    else:
-        message = clean_data(dte_today.year)
-        logging.info("Очистка завершена. Статус: %s", message)
+    message = clean_data(dte_today.year)
+    status["message"] = message
+    logging.info("Очистка завершена. Статус: %s", message)
