@@ -8,6 +8,7 @@ import re
 import os
 
 from db_pool import DatabasePool
+from prediction import get_prediction
 
 BASE_DIR, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__)
@@ -17,7 +18,19 @@ DATE_FORMAT_REGEX = r"^\d{4}-(0[1-9]|1[0-2])$"
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    database = DatabasePool.get_connection()
+    cursor = database.cursor()
+    try:
+        query = """SELECT cntry_name FROM country
+        ORDER BY cntry_name;"""
+        cursor.execute(query,)
+        countries = [row[0] for row in cursor.fetchall()]
+    except Exception as e:
+        countries = []
+    finally:
+        cursor.close()
+        DatabasePool.release_connection(database)
+    return render_template('index.html', countries=countries)
 
 
 # генерация изображения для заданной страны
@@ -130,6 +143,16 @@ def show_data():
     combined_image = combine_img(images)
     new_img = io.BytesIO()
     combined_image.save(new_img, format='PNG')
+    new_img.seek(0)
+    return Response(new_img, mimetype='image/png')
+
+
+@app.route('/prediction', methods=['POST'])
+def prediction():
+    country = request.form.get('country')
+    img = get_prediction(country)
+    new_img = io.BytesIO()
+    img.save(new_img, format='PNG')
     new_img.seek(0)
     return Response(new_img, mimetype='image/png')
 

@@ -25,25 +25,21 @@
     <form action="/show_plot" method="POST">
         <fieldset>
             <legend>Выберите режим визуализации:</legend>
-
             <!-- Радиокнопка для показа всех месяцев -->
             <label>
                 <input type="radio" name="mode" value="all_months" checked>
                 Все месяцы
             </label><br>
-
             <!-- Радиокнопка для показа среднегодовых -->
             <label>
                 <input type="radio" name="mode" value="annual">
                 Среднегодовые показатели
             </label><br>
-
             <!-- Радиокнопка для диапазона годов -->
             <label>
                 <input type="radio" name="mode" value="range">
                 Диапазон годов и месяцев
             </label><br>
-
             <!-- Поля для диапазона годов и месяцев -->
             <div class="range-fields">
                 <label>Начало:
@@ -55,6 +51,20 @@
             </div>
         </fieldset>
         <button name="show_but" type="submit">Показать данные</button>
+    </form><br>
+    <form action="/prediction" method="POST">
+        <fieldset>
+            <legend>Выберите страну:</legend>
+            <label>
+                <input type="search" name="country" list="character" required>
+                <datalist id="character">
+                    {% for country in countries %}
+                    <option value="{{ country }}"></option>
+                    {% endfor %}
+                </datalist>
+            </label><br>
+        </fieldset>
+        <button name="show_but" type="submit">Сформировать прогноз</button>
     </form>
 </div>
 
