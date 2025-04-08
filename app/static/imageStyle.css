@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.img-container {
+    width: 100vw;
+    height: auto;
+}
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+}

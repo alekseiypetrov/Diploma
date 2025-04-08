@@ -59,6 +59,6 @@ def about():
 if __name__ == '__main__':
     DatabasePool.init_pool()
     try:
-        app.run(debug=False, host="0.0.0.0")
+        app.run(host="0.0.0.0", port=5000)
     except Exception as e:
         DatabasePool.close_pool()
