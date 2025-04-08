@@ -92,7 +92,7 @@ def clean_data(year):
             DATE_PART('Year', dte) AS year, id_cntry, 
             AVG(temperature) as avg_temp, AVG(new_cases) as avg_cases
             FROM information
-            WHERE (%s - DATE_PART('Year', dte) >= 2)
+            WHERE (%s - DATE_PART('Year', dte) >= 3)
             GROUP BY year, id_cntry
         ) avg_info 
         ON c.id_cntry = avg_info.id_cntry
@@ -106,7 +106,7 @@ def clean_data(year):
             for line in result:
                 cursor.execute(query, line)
 
-            query = """DELETE FROM information WHERE (%s - DATE_PART('Year', dte) >= 2);"""
+            query = """DELETE FROM information WHERE (%s - DATE_PART('Year', dte) >= 3);"""
             cursor.execute(query, (year,))
             database.commit()
     finally:

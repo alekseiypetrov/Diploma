@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1;
-    const minYear = currentYear - 1;
+    const minYear = currentYear - 2;
     const maxYear = currentYear;
 
     const formatDate = (year, month) => `${year}-${month.toString().padStart(2, '0')}`;
