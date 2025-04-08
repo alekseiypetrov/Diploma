@@ -1,6 +1,6 @@
 FROM python:3.9
 
-WORKDIR /app
+WORKDIR /web_app
 
 COPY requirements.txt .
 
@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5000
 
-CMD ["python", "./app/app.py"]
+CMD ["python", "app/app.py"]

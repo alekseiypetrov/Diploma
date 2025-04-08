@@ -11,7 +11,7 @@ app = Flask(__name__)
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
 
-scheduler_collect.add_job(scheduled_parse, 'interval', minutes=5)
+scheduler_collect.add_job(scheduled_parse, 'interval', minutes=2)
 scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
 
 

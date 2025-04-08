@@ -6,8 +6,6 @@ from db_pool import DatabasePool
 from rendering import get_image
 from prediction import get_prediction
 
-# DATE_FORMAT_REGEX = r"^\d{4}-(0[1-9]|1[0-2])$"
-# BASE_DIR, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
 app = Flask(__name__)
 
 

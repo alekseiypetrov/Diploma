@@ -72,7 +72,7 @@ def generate_img(id_cntry, cntry_name, mode):
     fig.tight_layout()
 
     fig.suptitle(f"Изменение температуры и заболеваемости (Страна: {cntry_name})\n\n", fontsize=16)
-    plt.subplots_adjust(top=0.9, bottom=0.15)
+    plt.subplots_adjust(top=0.9, bottom=0.35)
 
     img = io.BytesIO()
     plt.savefig(img, format='png')

@@ -1,13 +1,13 @@
 FROM python:3.9
 
-WORKDIR /app
+WORKDIR /web_app
 
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+COPY . .
 
 EXPOSE 5001
 
-CMD ["python", "./parser/parser.py"]
+CMD ["python", "parser/parser.py"]

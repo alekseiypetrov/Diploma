@@ -98,10 +98,6 @@ def fit_sarima(y, x=None):  # -> ( io.Bytes(), NumPy.ndarray )
         # если есть NaN в прогнозах, заменить на среднее значение всех не NaN элементов
         mask = np.isnan(y_pred)
         y_pred[mask] = 0 if y_pred[~mask].size == 0 else y_pred[~mask].mean()
-        # if y_pred[~np.isnan(y_pred)].size == 0:
-        #     y_pred[np.isnan(y_pred)] = 0
-        # else:
-        #     y_pred[np.isnan(y_pred)] = y_pred[~np.isnan(y_pred)].mean()
     return model_bytes, y_pred
 
 
@@ -113,10 +109,6 @@ def fit_lin_regr(x, y):  # -> ( io.Bytes(), NumPy.ndarray )
     # в случае возникновения NaN в прогнозах, заменить на среднее значение всех не NaN элементов
     mask = np.isnan(y_pred)
     y_pred[mask] = 0 if y_pred[~mask].size == 0 else y_pred[~mask].mean()
-    # if y_pred[~np.isnan(y_pred)].size == 0:
-    #     y_pred[np.isnan(y_pred)] = 0
-    # else:
-    #     y_pred[np.isnan(y_pred)] = y_pred[~np.isnan(y_pred)].mean()
     model_bytes = io.BytesIO()
     joblib.dump(model, model_bytes)
     model_bytes.seek(0)

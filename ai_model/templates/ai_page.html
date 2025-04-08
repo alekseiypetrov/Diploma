@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>AI</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <div class="header">
     <h1>Страница предиктивной модели</h1>
-    <p>Назначение: обучение на исходных данных и формирование прогноза заболеваемости в стране, выбранной
+    <p>Назначение: обучение на исходных данных и визуализация качества обучения в стране, выбранной
         пользователем</p>
     <!--    <a href="/">На главную</a>-->
 <!--    <a href="http://172.20.10.13:5000/">На главную</a>-->
@@ -22,6 +22,20 @@
             <li><p><strong>Последнее обновление:</strong> {{ log['last_update'] or "Нет данных" }}</p></li>
         </ul>
     </div>
+    <form action="/quality" method="POST">
+        <fieldset>
+            <legend>Выберите страну:</legend>
+            <label>
+                <input type="search" name="country" list="character" required>
+                <datalist id="character">
+                    {% for country in countries %}
+                    <option value="{{ country }}"></option>
+                    {% endfor %}
+                </datalist>
+            </label>
+        </fieldset>
+        <button name="show_but" type="submit">Узнать качество обучения</button>
+    </form>
 </div>
 <div class="footer">
     <p>2025 - Алексей Петров (А-13-21)</p>

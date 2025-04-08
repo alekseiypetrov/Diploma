@@ -37,7 +37,7 @@ services:
     ports:
       - "5001:5001"
     environment:
-      - PYTHONPATH=/app:/parser:/
+      - PYTHONPATH=/web_app:/parser:/
     depends_on:
       - db
     networks:
@@ -52,7 +52,7 @@ services:
     ports:
       - "5002:5002"
     environment:
-      - PYTHONPATH=/app:/ai_model:/
+      - PYTHONPATH=/web_app:/ai_model:/
     depends_on:
       - db
     networks:

@@ -1,13 +1,13 @@
 FROM python:3.9
 
-WORKDIR /app
+WORKDIR /web_app
 
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app
+COPY . .
 
 EXPOSE 5002
 
-CMD ["python", "./ai_model/model.py"]
+CMD ["python", "ai_model/model.py"]
