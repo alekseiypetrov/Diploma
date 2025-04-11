@@ -6,7 +6,7 @@ from db_pool import DatabasePool
 from rendering import get_image
 from prediction import get_prediction
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 
 @app.route('/')

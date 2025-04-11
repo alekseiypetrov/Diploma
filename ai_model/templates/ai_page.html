@@ -10,9 +10,7 @@
     <h1>Страница предиктивной модели</h1>
     <p>Назначение: обучение на исходных данных и визуализация качества обучения в стране, выбранной
         пользователем</p>
-    <!--    <a href="/">На главную</a>-->
-<!--    <a href="http://172.20.10.13:5000/">На главную</a>-->
-        <a href="http://192.168.254.81:5000/">На главную</a>
+    <a href="/">На главную</a>
 </div>
 <div class="main">
     <div class="section">
@@ -22,7 +20,7 @@
             <li><p><strong>Последнее обновление:</strong> {{ log['last_update'] or "Нет данных" }}</p></li>
         </ul>
     </div>
-    <form action="/quality" method="POST">
+    <form action="/ai/quality" method="POST">
         <fieldset>
             <legend>Выберите страну:</legend>
             <label>

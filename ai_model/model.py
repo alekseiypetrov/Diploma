@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request, Response, render_template
+from flask import Flask, request, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import signal
@@ -9,10 +9,9 @@ from app.db_pool import DatabasePool
 from scheduler import scheduled_learn, log
 from errors import get_error
 
-# ai_bp = Blueprint('ai', __name__, url_prefix='/ai')
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 scheduler_learn = BackgroundScheduler()
-scheduler_learn.add_job(scheduled_learn, 'interval', minutes=15)
+scheduler_learn.add_job(scheduled_learn, 'interval', minutes=10)
 
 
 @app.route('/')
@@ -45,8 +44,6 @@ def show_quality():
     img_base64 = base64.b64encode(new_img.read()).decode('utf-8')
     return render_template('show_quality.html', image_data=img_base64, metrics=metrics)
 
-
-# app.register_blueprint(ai_bp)
 
 def initialize_services():
     logging.info("Инициализация сервиса...")

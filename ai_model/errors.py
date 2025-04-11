@@ -12,12 +12,14 @@ from app.db_pool import DatabasePool
 
 def get_error(country):
     date = get_date()
-    periods = 12 + date[-1].month
+    periods = 24 + date[-1].month
     fh_date = pd.date_range(start=date[0] + pd.offsets.MonthEnd(0), periods=periods, freq="ME")
     fh = ForecastingHorizon(fh_date, is_relative=False)
     date = [f"{fh_date[0].year}-{fh_date[0].month}", f"{fh_date[-1].year}-{fh_date[-1].month}"]
 
     id_cntry = get_id(country)
+    if id_cntry is None:
+        return f"Нет страны {country} в БД", 400
     models = get_models(id_cntry)
     if not models:
         return f"Нет моделей страны {country}", 400

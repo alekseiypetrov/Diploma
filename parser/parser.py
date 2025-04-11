@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template
+from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import signal
@@ -6,12 +6,11 @@ import signal
 from schedulers import scheduled_parse, scheduled_clean, status
 from app.db_pool import DatabasePool
 
-# parser_bp = Blueprint('parser', __name__, url_prefix='/parser')
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
 
-scheduler_collect.add_job(scheduled_parse, 'interval', minutes=2)
+scheduler_collect.add_job(scheduled_parse, 'interval', minutes=15)
 scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
 
 
@@ -19,9 +18,6 @@ scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
 def interface():
     logging.info("Запрос к странице парсера")
     return render_template('parser_page.html', status=status)
-
-
-# app.register_blueprint(parser_bp)
 
 
 # Инициализация пула соединений и планировщиков
