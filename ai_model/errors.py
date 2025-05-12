@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sktime.forecasting.base import ForecastingHorizon
-from sklearn.metrics import root_mean_squared_error, mean_absolute_error
+from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
 from PIL import Image
 import matplotlib.pyplot as plt
 import io
@@ -27,10 +27,11 @@ def get_error(country):
     if true_values.empty:
         return f"В БД нет данных по стране {country}", 400
     predicted_temp, predicted_covid = forecast(fh, models)
-    wape, rmse, mae = (
+    wape, rmse, mae, r2 = (
         weighted_average_percentage_error(true_values["Temperature"].values, predicted_temp.values),
         root_mean_squared_error(true_values["Cases"].values, predicted_covid),
-        mean_absolute_error(true_values["Cases"].values, predicted_covid)
+        mean_absolute_error(true_values["Cases"].values, predicted_covid),
+        r2_score(true_values["Cases"].values, predicted_covid)
     )
 
     fig, axes = plt.subplots(1, 2, figsize=(15, 10))
@@ -60,7 +61,7 @@ def get_error(country):
     img = Image.open(img_bytes)
     output_img = Image.new('RGB', img.size)
     output_img.paste(img, (0, 0))
-    return output_img, [round(wape, 2), round(rmse, 2), round(mae, 2)]
+    return output_img, [round(wape, 2), round(rmse, 2), round(mae, 2), round(r2, 3)]
 
 
 def weighted_average_percentage_error(y_true, y_pred):
