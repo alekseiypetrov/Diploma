@@ -2,7 +2,8 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 
-from app.db_pool import DatabasePool
+from tools.tools.db_pool import DatabasePool
+from tools.tools.db_queries import get_date, get_all_id
 
 
 # занесение данных в БД
@@ -27,38 +28,16 @@ def insert_info(data):
 
 # извлечение данных для сбора: получение id всех стран и последней даты
 def extract_info(countries):
-    database = DatabasePool.get_connection()
-    cursor = database.cursor()
-    id_countries = []
     dte = date(2020, 1, 31)
-    try:
-        # получение id всех стран
-        query = """SELECT cntry_name, id_cntry FROM country ORDER BY cntry_name;"""
-        cursor.execute(query, )
-        result = cursor.fetchall()
-
-        # проверка на пустоту таблицы и добавление в нее стран
-        if not result:
-            for country in countries:
-                insert_country(country)
-
-        cursor.execute(query, )
-        id_countries = cursor.fetchall()
-
-        # получение для всех стран общей даты, по которой будем собирать все данные
-        query = """SELECT dte 
-                   FROM information 
-                   WHERE id_cntry = %s
-                   ORDER BY dte DESC
-                   LIMIT 1; 
-                """
-        cursor.execute(query, (id_countries[-1][-1],))
-        result = cursor.fetchone()
-        if result:
-            dte = result[0] + relativedelta(months=1)
-    finally:
-        cursor.close()
-        DatabasePool.release_connection(database)
+    # получение id всех стран и проверка на пустоту таблицы и добавление в нее стран
+    id_countries = get_all_id()
+    if not id_countries:
+        for country in countries:
+            insert_country(country)
+    # получение для всех стран общей даты, по которой будем собирать все данные
+    result = get_date(from_table="information", is_end=True)
+    if result:
+        dte = result + relativedelta(months=1)
     return pd.DataFrame(id_countries, columns=["country", "id"]).set_index("country"), dte
 
 

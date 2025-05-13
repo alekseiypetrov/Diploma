@@ -4,7 +4,7 @@ import logging
 import signal
 
 from schedulers import scheduled_parse, scheduled_clean, status
-from app.db_pool import DatabasePool
+from tools.tools.db_pool import DatabasePool
 
 app = Flask(__name__, static_url_path='/static')
 scheduler_collect = BackgroundScheduler()

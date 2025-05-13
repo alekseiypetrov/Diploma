@@ -5,7 +5,8 @@ import signal
 import base64
 import io
 
-from app.db_pool import DatabasePool
+from tools.tools.db_pool import DatabasePool
+from tools.tools.db_queries import get_countries
 from scheduler import scheduled_learn, log
 from errors import get_error
 
@@ -17,18 +18,7 @@ scheduler_learn.add_job(scheduled_learn, 'interval', minutes=10)
 @app.route('/')
 def interface():
     logging.info("Запрос к странице ИИ-модели")
-    database = DatabasePool.get_connection()
-    cursor = database.cursor()
-    try:
-        query = """SELECT cntry_name FROM country
-            ORDER BY cntry_name;"""
-        cursor.execute(query, )
-        countries = [row[0] for row in cursor.fetchall()]
-    except Exception as e:
-        countries = []
-    finally:
-        cursor.close()
-        DatabasePool.release_connection(database)
+    countries = get_countries()
     return render_template("ai_page.html", log=log, countries=countries)
 
 

@@ -2,7 +2,8 @@ from flask import Flask, render_template, Response, request
 import io
 import base64
 
-from db_pool import DatabasePool
+from tools.tools.db_pool import DatabasePool
+from tools.tools.db_queries import get_countries
 from rendering import get_image
 from prediction import get_prediction
 
@@ -11,18 +12,7 @@ app = Flask(__name__, static_url_path='/static')
 
 @app.route('/')
 def home():
-    database = DatabasePool.get_connection()
-    cursor = database.cursor()
-    try:
-        query = """SELECT cntry_name FROM country
-        ORDER BY cntry_name;"""
-        cursor.execute(query, )
-        countries = [row[0] for row in cursor.fetchall()]
-    except Exception as e:
-        countries = []
-    finally:
-        cursor.close()
-        DatabasePool.release_connection(database)
+    countries = get_countries()
     return render_template('index.html', countries=countries)
 
 

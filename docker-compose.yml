@@ -22,6 +22,7 @@ services:
       context: .
       dockerfile: ./app/Dockerfile
     volumes:
+      - ./tools:/usr/local/lib/python3.9/site-packages/tools
       - ./app/static:/web_app/app/static
       - ./app/templates:/web_app/app/templates
     ports:
@@ -38,6 +39,7 @@ services:
       context: .
       dockerfile: ./parser/Dockerfile
     volumes:
+      - ./tools:/usr/local/lib/python3.9/site-packages/tools #./tools:/tmp/tools
       - ./parser/static:/web_app/parser/static
       - ./parser/templates:/web_app/parser/templates
     ports:
@@ -56,6 +58,7 @@ services:
       context: .
       dockerfile: ./ai_model/Dockerfile
     volumes:
+      - ./tools:/usr/local/lib/python3.9/site-packages/tools
       - ./ai_model/static:/web_app/ai_model/static
       - ./ai_model/templates:/web_app/ai_model/templates
     ports:

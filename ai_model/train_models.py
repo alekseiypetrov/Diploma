@@ -7,10 +7,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 import io
 import joblib
-import psycopg2
-import logging
 
-from app.db_pool import DatabasePool
+from tools.tools.model_manager import get_samples, save_fit_models
 
 
 def learning():  # id_countries):  # -> Str
@@ -21,30 +19,10 @@ def learning():  # id_countries):  # -> Str
     # обучение моделей
     models = fit(datasets)
     # сохранение моделей
-    status = save(models, np.unique(datasets["Id"].values), datetime.date.today())
+    status = save_fit_models(models, np.unique(datasets["Id"].values), datetime.date.today())
     del datasets
     del models
     return status
-
-
-def get_samples():  # -> Pandas.DataFrame()
-    database = DatabasePool.get_connection()
-    cursor = database.cursor()
-    try:
-        query = """SELECT * FROM information
-        ORDER BY (id_cntry, dte);
-        """
-        cursor.execute(query, )
-        dataset = (pd.DataFrame(cursor.fetchall(), columns=["Date", "Id", "Temperature", "Cases"]).
-                   astype({"Date": 'datetime64[ns]', "Id": int, "Temperature": float, "Cases": int}))
-        dataset["Date"] = dataset["Date"] + pd.offsets.MonthEnd(0)
-    except Exception as e:
-        logging.exception(e)
-        return pd.DataFrame()
-    finally:
-        cursor.close()
-        DatabasePool.release_connection(database)
-    return dataset
 
 
 # СХЕМА ВОЗВРАЩАЕМОГО ЗНАЧЕНИЯ ФУНКЦИИ fit()
@@ -129,27 +107,3 @@ def fit_gbr(meta_x, y):  # -> io.Bytes()
     model_bytes.seek(0)
     model_bytes = model_bytes.read()
     return model_bytes
-
-
-def save(models, id_countries, dte):  # -> Str
-    database = DatabasePool.get_connection()
-    cursor = database.cursor()
-    try:
-        query = """INSERT INTO ai_models (id_cntry, model_name, model_file, dte)
-                    VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (id_cntry, model_name) DO 
-                    UPDATE SET model_file = EXCLUDED.model_file, dte = EXCLUDED.dte;
-                    """
-        for id_country in id_countries:  # sorted(id_countries):
-            cursor.execute(query, (int(id_country), "SARIMA", psycopg2.Binary(models[id_country]["SARIMA"]), dte))
-            cursor.execute(query, (int(id_country), "LinRegr", psycopg2.Binary(models[id_country]["LinRegr"]), dte))
-            cursor.execute(query, (int(id_country), "SARIMAX", psycopg2.Binary(models[id_country]["SARIMAX"]), dte))
-            cursor.execute(query, (int(id_country), "GBR", psycopg2.Binary(models[id_country]["GBR"]), dte))
-    except Exception as e:
-        logging.exception(e)
-        return "Не все модели были обучены и сохранены"
-    finally:
-        database.commit()
-        cursor.close()
-        DatabasePool.release_connection(database)
-    return "Все модели обучены и сохранены"
