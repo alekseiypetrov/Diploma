@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import io
 
-from db_pool import DatabasePool
+from tools.tools.db_pool import DatabasePool
+from tools.tools.db_queries import get_all_id
 
 DATE_FORMAT_REGEX = r"^\d{4}-(0[1-9]|1[0-2])$"
 
@@ -22,36 +23,28 @@ def get_image(mode):
         elif not re.match(DATE_FORMAT_REGEX, end_date):
             return f"Ошибка: Конечная дата {end_date} не соответствует формату YYYY-MM."
 
-    countries = get_countries()
+    # countries = get_countries()
+    countries = get_all_id()
     if not countries:
         return "База данных пока пуста"
     images = [
-        generate_img(*line, mode) for line in countries
+        generate_img(*(line[-1::-1]), mode) for line in countries
     ]
 
     return combine(images)
-
-
-# получение всех стран и id
-def get_countries():
-    conn = DatabasePool.get_connection()
-    cursor = conn.cursor()
-    try:
-        query = """SELECT * FROM country ORDER BY cntry_name;"""
-        cursor.execute(query)
-        countries = cursor.fetchall()
-    except Exception as e:
-        return []
-    finally:
-        cursor.close()
-        DatabasePool.release_connection(conn)
-    return countries
 
 
 # генерация изображения для заданной страны
 def generate_img(id_cntry, cntry_name, mode):
     dataset = get_data(id_cntry, mode)
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    if dataset.empty:
+        img = io.BytesIO()
+        plt.savefig(img, format='png')
+        img.seek(0)
+        plt.close()
+        return Image.open(img)
+
     axes[0].grid(True)
     axes[0].plot(dataset["dte"], dataset["temperature"])
     axes[0].set_ylabel("Температура")
