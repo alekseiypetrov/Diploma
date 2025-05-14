@@ -15,8 +15,13 @@ def is_fresh_models():
     # получение последней даты обновления моделей
     dte_learn = get_date(from_table="ai_models", is_end=True)
     # любая возникшая ошибка не позволяет проводить дальнейшее обучение, поэтому возвращаем True
-    if not dte_collect or not dte_learn:
+    if not dte_collect:
         return True
+    # если моделей нет, то обучаем
+    if not dte_learn:
+        return False
+    # if not dte_collect or not dte_learn:
+    #     return True
     # появились новые данные - модели устарели, иначе - не обучаем
     return (dte_collect - dte_learn).days < 0
 

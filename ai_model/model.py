@@ -6,7 +6,7 @@ import base64
 import io
 
 from tools.tools.db_pool import DatabasePool
-from tools.tools.db_queries import get_countries
+from tools.tools.db_queries import get_countries, get_date
 from scheduler import scheduled_learn, log
 from errors import get_error
 
@@ -19,6 +19,8 @@ scheduler_learn.add_job(scheduled_learn, 'interval', minutes=10)
 def interface():
     logging.info("Запрос к странице ИИ-модели")
     countries = get_countries()
+    if log["last_update"] is None:
+        log["last_update"] = get_date(from_table="information", is_end=True)
     return render_template("ai_page.html", log=log, countries=countries)
 
 

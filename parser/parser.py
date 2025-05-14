@@ -5,6 +5,7 @@ import signal
 
 from schedulers import scheduled_parse, scheduled_clean, status
 from tools.tools.db_pool import DatabasePool
+from tools.tools.db_queries import get_date
 
 app = Flask(__name__, static_url_path='/static')
 scheduler_collect = BackgroundScheduler()
@@ -17,6 +18,8 @@ scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
 @app.route('/')
 def interface():
     logging.info("Запрос к странице парсера")
+    if status["last_update"] is None:
+        status["last_update"] = get_date(from_table="information", is_end=True)
     return render_template('parser_page.html', status=status)
 
 
