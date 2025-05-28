@@ -1,26 +1,16 @@
-from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import signal
+import time
 
-from schedulers import scheduled_parse, scheduled_clean, status
+from schedulers import scheduled_parse, scheduled_clean
 from tools.tools.db_pool import DatabasePool
-from tools.tools.db_queries import get_date
 
-app = Flask(__name__, static_url_path='/static')
 scheduler_collect = BackgroundScheduler()
 scheduler_clean = BackgroundScheduler()
 
 scheduler_collect.add_job(scheduled_parse, 'interval', minutes=5)
 scheduler_clean.add_job(scheduled_clean, 'interval', minutes=120)
-
-
-@app.route('/')
-def interface():
-    logging.info("Запрос к странице парсера")
-    if status["last_update"] is None:
-        status["last_update"] = get_date(from_table="information", is_end=True)
-    return render_template('parser_page.html', status=status)
 
 
 # Инициализация пула соединений и планировщиков
@@ -51,7 +41,8 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, shutdown_services)
 
     try:
-        app.run(host='0.0.0.0', port=5001)
+        while True:
+            time.sleep(0.1)
     except Exception as e:
         logging.error("Ошибка в работе приложения: %s", e)
     finally:

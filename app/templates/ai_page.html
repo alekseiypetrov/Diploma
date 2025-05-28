@@ -16,8 +16,8 @@
     <div class="section">
         <ul>
             <li><h2>Статус последнего обновления</h2></li>
-            <li><p><strong>Статус:</strong> {{ log['status'] }}</p></li>
-            <li><p><strong>Последнее обновление:</strong> {{ log['last_update'] or "Нет данных" }}</p></li>
+            <li><p><strong>Статус:</strong> {{ status['message'] }}</p></li>
+            <li><p><strong>Последнее обновление:</strong> {{ status['last_update'] or "Нет данных" }}</p></li>
         </ul>
     </div>
     <form action="/ai/quality" method="POST">
