@@ -12,13 +12,13 @@
 <div class="header">
     <h1>Главная страница</h1>
     <p></p>
-    <a href="/parser/">Парсер</a>
-    <a href="/ai/">Модель</a>
+    <a href="{{ url_for('parser') }}">Парсер</a>
+    <a href="{{ url_for('ai_model') }}">Модель</a>
     <a href="{{ url_for('about') }}">О проекте</a>
 </div>
 
 <div class="main">
-    <form action="/show_plot" method="POST">
+    <form action="/show_plot"> <!-- method="POST"> -->
         <fieldset>
             <legend>Выберите режим визуализации:</legend>
             <!-- Радиокнопка для показа всех месяцев -->
@@ -47,8 +47,9 @@
             </div>
         </fieldset>
         <button name="show_but" type="submit">Показать данные</button>
-    </form><br>
-    <form action="/prediction" method="POST">
+    </form>
+    <br>
+    <form action="/prediction"> <!-- method="POST"> -->
         <fieldset>
             <legend>Выберите страну:</legend>
             <label>

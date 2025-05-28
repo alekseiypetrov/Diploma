@@ -1,38 +1,13 @@
-from flask import Flask, request, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import signal
-import base64
-import io
+import time
 
 from tools.tools.db_pool import DatabasePool
-from tools.tools.db_queries import get_countries
-from scheduler import scheduled_learn, log
-from errors import get_error
+from scheduler import scheduled_learn
 
-app = Flask(__name__, static_url_path='/static')
 scheduler_learn = BackgroundScheduler()
 scheduler_learn.add_job(scheduled_learn, 'interval', minutes=10)
-
-
-@app.route('/')
-def interface():
-    logging.info("Запрос к странице ИИ-модели")
-    countries = get_countries()
-    return render_template("ai_page.html", log=log, countries=countries)
-
-
-@app.route('/quality', methods=['POST'])
-def show_quality():
-    country = request.form.get('country')
-    img, metrics = get_error(country)
-    if type(img) is str and type(metrics) is int:
-        return img, metrics
-    new_img = io.BytesIO()
-    img.save(new_img, format='PNG')
-    new_img.seek(0)
-    img_base64 = base64.b64encode(new_img.read()).decode('utf-8')
-    return render_template('show_quality.html', image_data=img_base64, metrics=metrics)
 
 
 def initialize_services():
@@ -60,7 +35,8 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, shutdown_services)
 
     try:
-        app.run(host='0.0.0.0', port=5002)
+        while True:
+            time.sleep(0.1)
     except Exception as e:
         logging.error("Ошибка в работе приложения: %s", e)
     finally:

@@ -14,8 +14,8 @@ DATE_FORMAT_REGEX = r"^\d{4}-(0[1-9]|1[0-2])$"
 
 def get_image(mode):
     if mode == "range":
-        start_date = request.form.get('start_date')
-        end_date = request.form.get('end_date')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
         if not start_date or not end_date:
             return "Заполните все поля с датами"
         elif not re.match(DATE_FORMAT_REGEX, start_date):
@@ -23,7 +23,6 @@ def get_image(mode):
         elif not re.match(DATE_FORMAT_REGEX, end_date):
             return f"Ошибка: Конечная дата {end_date} не соответствует формату YYYY-MM."
 
-    # countries = get_countries()
     countries = get_all_id()
     if not countries:
         return "База данных пока пуста"
@@ -99,8 +98,8 @@ def get_data(id_cntry, mode):
             end_date = datetime.date.today()
             start_date = datetime.date(end_date.year - 3, 1, 1)
             if mode == "range":
-                start_date = datetime.datetime.strptime(request.form.get('start_date'), "%Y-%m").date()
-                end_date = datetime.datetime.strptime(request.form.get('end_date'), "%Y-%m").date()
+                start_date = datetime.datetime.strptime(request.args.get('start_date'), "%Y-%m").date()
+                end_date = datetime.datetime.strptime(request.args.get('end_date'), "%Y-%m").date()
                 if start_date > end_date:
                     start_date, end_date = end_date, start_date
 
