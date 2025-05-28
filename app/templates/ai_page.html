@@ -20,7 +20,7 @@
             <li><p><strong>Последнее обновление:</strong> {{ status['last_update'] or "Нет данных" }}</p></li>
         </ul>
     </div>
-    <form action="/ai/quality" method="POST">
+    <form action="/ai/quality"> <!-- method="POST"> -->
         <fieldset>
             <legend>Выберите страну:</legend>
             <label>

@@ -18,7 +18,7 @@
 </div>
 
 <div class="main">
-    <form action="/show_plot" method="POST">
+    <form action="/show_plot"> <!-- method="POST"> -->
         <fieldset>
             <legend>Выберите режим визуализации:</legend>
             <!-- Радиокнопка для показа всех месяцев -->
@@ -47,8 +47,9 @@
             </div>
         </fieldset>
         <button name="show_but" type="submit">Показать данные</button>
-    </form><br>
-    <form action="/prediction" method="POST">
+    </form>
+    <br>
+    <form action="/prediction"> <!-- method="POST"> -->
         <fieldset>
             <legend>Выберите страну:</legend>
             <label>

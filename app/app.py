@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, request
 import io
 import base64
 import os
@@ -21,9 +21,9 @@ def home():
     return render_template('index.html', countries=countries)
 
 
-@app.route('/show_plot', methods=['POST'])
+@app.route('/show_plot')
 def show_data():
-    mode = request.form.get('mode')
+    mode = request.args.get('mode')
     img = get_image(mode)
     if type(img) is str:
         return img, 400
@@ -34,14 +34,15 @@ def show_data():
     return render_template('show_plot.html', image_data=img_base64)
 
 
-@app.route('/prediction', methods=['POST'])
+@app.route('/prediction')
 def prediction():
-    country = request.form.get('country')
+    country = request.args.get('country')
     img = get_prediction(country)
     new_img = io.BytesIO()
     img.save(new_img, format='PNG')
     new_img.seek(0)
-    return Response(new_img, mimetype='image/png')
+    img_base64 = base64.b64encode(new_img.read()).decode('utf-8')
+    return render_template('show_prediction.html', image_data=img_base64)
 
 
 @app.route('/parser')
@@ -59,9 +60,9 @@ def ai_model():
     return render_template("ai_page.html", status=status, countries=countries)
 
 
-@app.route('/ai/quality', methods=['POST'])
+@app.route('/ai/quality')
 def show_quality():
-    country = request.form.get('country')
+    country = request.args.get('country')
     img, metrics = get_error(country)
     if type(img) is str and type(metrics) is int:
         return img, metrics
